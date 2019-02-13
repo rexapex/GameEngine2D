@@ -65,15 +65,29 @@
   <ItemGroup>
     <Compile Include="EntitySystem\Component.cs" />
     <Compile Include="EntitySystem\Entity.cs" />
+    <Compile Include="EntitySystem\IComponentDrawable.cs" />
+    <Compile Include="EntitySystem\IComponentUpdatable.cs" />
     <Compile Include="Math\MathConstants.cs" />
     <Compile Include="Math\Transform.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EngineCore\Game.cs" />
+    <Compile Include="Rendering\AnimatedSpriteRenderer.cs" />
+    <Compile Include="Rendering\RectangleRendererDX.cs" />
+    <Compile Include="Rendering\SpriteRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="EngineAssets\PixelShader.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="EngineAssets\VertexShader.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

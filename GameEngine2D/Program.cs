@@ -36,10 +36,10 @@ namespace GameEngine2D
             Console.WriteLine((float)(System.Math.PI*2));
             Console.WriteLine((float)(System.Math.PI / 180));
 
-            //using (Game game = new Game())
-            //{
-            //    game.Start();
-            //}
+            using (Game game = new Game())
+            {
+                game.Start();
+            }
             Console.ReadKey();
         }
     }

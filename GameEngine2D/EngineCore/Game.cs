@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using SharpDX;
 using SharpDX.Windows;
 using SharpDX.DXGI;
 using SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
+using GameEngine2D.Rendering;
 
 namespace GameEngine2D.EngineCore
 {
@@ -22,6 +24,8 @@ namespace GameEngine2D.EngineCore
         private D3D11.RenderTargetView renderTargetView;
         private SwapChain swapChain;
 
+        private Viewport viewport;
+
         private bool running = false;
 
         public Game()
@@ -30,25 +34,24 @@ namespace GameEngine2D.EngineCore
             renderForm = new RenderForm("2D Game Engine");
             renderForm.ClientSize = new Size(Width, Height);
             renderForm.AllowUserResizing = false;
-
+            
             // Initialize Direct3D
             InitializeDeviceResources();
         }
 
         private void InitializeDeviceResources()
         {
-            // Create a description of the back buffer
-            ModeDescription backBufferDesc = new ModeDescription(Width, Height, new Rational(60, 1), Format.R8G8B8A8_UNorm);
-
             // Create a description of the swap chain
             SwapChainDescription swapChainDesc = new SwapChainDescription()
             {
-                ModeDescription = backBufferDesc,
-                SampleDescription = new SampleDescription(0, 1),
-                Usage = Usage.RenderTargetOutput,
                 BufferCount = 1,
+                ModeDescription = new ModeDescription(renderForm.ClientSize.Width,
+                    renderForm.ClientSize.Height, new Rational(60, 1), Format.R8G8B8A8_UNorm),
+                IsWindowed = !renderForm.IsFullscreen,
                 OutputHandle = renderForm.Handle,
-                IsWindowed = true
+                SampleDescription = new SampleDescription(1, 0),
+                SwapEffect = SwapEffect.Discard,
+                Usage = Usage.RenderTargetOutput
             };
 
             // Create a Direct3D device using GPU (hardware) rendering
@@ -60,6 +63,13 @@ namespace GameEngine2D.EngineCore
             {
                 renderTargetView = new D3D11.RenderTargetView(d3dDevice, backBuffer);
             }
+
+            // Create the viewport
+            viewport = new Viewport(0, 0, Width, Height);
+            d3dDeviceContext.Rasterizer.SetViewport(viewport);
+
+            // Initialize the rectangle renderer
+            RectangleRendererDX.Instance.Initialize(d3dDevice, d3dDeviceContext);
         }
 
         public void Start()
@@ -78,8 +88,14 @@ namespace GameEngine2D.EngineCore
 
         private void Draw()
         {
+            // Clear the screen
             d3dDeviceContext.OutputMerger.SetRenderTargets(renderTargetView);
-            d3dDeviceContext.ClearRenderTargetView(renderTargetView, new SharpDX.Color(127, 127, 127));
+            d3dDeviceContext.ClearRenderTargetView(renderTargetView, new SharpDX.Color(127, 178, 229));
+
+            // Draw the scene
+            // TODO
+
+            // Swap the front and back buffers
             swapChain.Present(1, PresentFlags.None);
         }
 

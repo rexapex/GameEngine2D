@@ -25,6 +25,34 @@ namespace GameEngine2D.EntitySystem
             components = new List<Component>();
         }
 
+        // Update the entity, its child entities and its components
+        public void Update()
+        {
+            foreach(Entity e in entities)
+            {
+                e.Update();
+            }
+
+            foreach(IComponentUpdatable c in components.OfType<IComponentUpdatable>())
+            {
+                c.Update();
+            }
+        }
+
+        // Draw the entity, its child entities and its components
+        public void Draw()
+        {
+            foreach (Entity e in entities)
+            {
+                e.Draw();
+            }
+
+            foreach (IComponentDrawable c in components.OfType<IComponentDrawable>())
+            {
+                c.Draw();
+            }
+        }
+
         // Add a child entity to the list of entities
         public void AddEntity(Entity e)
         {

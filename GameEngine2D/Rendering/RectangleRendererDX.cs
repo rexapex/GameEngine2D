@@ -32,6 +32,7 @@ namespace GameEngine2D.Rendering
 
         private D3D11.Buffer vertexBuffer;
         private D3D11.InputElement[] inputElements;
+        private int numVertices;
 
         private D3D11.VertexShader vertexShader;
         private D3D11.PixelShader pixelShader;
@@ -56,6 +57,7 @@ namespace GameEngine2D.Rendering
                     new Vector2(0.5f, 0.5f),
                     new Vector2(0.0f, -0.5f)
                 };
+                numVertices = vertices.Count();
 
                 // Create a vertex buffer
                 vertexBuffer = D3D11.Buffer.Create<Vector2>(d3dDevice, D3D11.BindFlags.VertexBuffer, vertices);
@@ -94,6 +96,10 @@ namespace GameEngine2D.Rendering
 
             // Set the input layout of the vertices
             d3dDeviceContext.InputAssembler.InputLayout = inputLayout;
+
+            // Draw the rectangle
+            d3dDeviceContext.InputAssembler.SetVertexBuffers(0, new D3D11.VertexBufferBinding(vertexBuffer, Utilities.SizeOf<Vector2>(), 0));
+            d3dDeviceContext.Draw(numVertices, 0);
         }
 
         public void Dispose()

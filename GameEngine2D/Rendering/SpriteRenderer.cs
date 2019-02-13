@@ -11,7 +11,7 @@ namespace GameEngine2D.Rendering
     {
         public void Draw()
         {
-
+            RectangleRendererDX.Instance.Draw();
         }
     }
 }

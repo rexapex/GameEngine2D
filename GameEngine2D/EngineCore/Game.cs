@@ -23,13 +23,17 @@ namespace GameEngine2D.EngineCore
         private D3D11.DeviceContext d3dDeviceContext;
         private D3D11.RenderTargetView renderTargetView;
         private SwapChain swapChain;
-
         private Viewport viewport;
+
+        private Scene scene;
 
         private bool running = false;
 
         public Game()
         {
+            // TODO - Scene Loading and Caching
+            scene = new Scene();
+
             // Create a window
             renderForm = new RenderForm("2D Game Engine");
             renderForm.ClientSize = new Size(Width, Height);
@@ -83,6 +87,7 @@ namespace GameEngine2D.EngineCore
 
         private void Update()
         {
+            scene.Update();
             Draw();
         }
 
@@ -93,7 +98,7 @@ namespace GameEngine2D.EngineCore
             d3dDeviceContext.ClearRenderTargetView(renderTargetView, new SharpDX.Color(127, 178, 229));
 
             // Draw the scene
-            // TODO
+            scene.Draw();
 
             // Swap the front and back buffers
             swapChain.Present(1, PresentFlags.None);

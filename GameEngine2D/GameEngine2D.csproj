@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EngineCore\Scene.cs" />
     <Compile Include="EntitySystem\Component.cs" />
     <Compile Include="EntitySystem\Entity.cs" />
     <Compile Include="EntitySystem\IComponentDrawable.cs" />

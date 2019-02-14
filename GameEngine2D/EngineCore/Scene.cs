@@ -16,16 +16,6 @@ namespace GameEngine2D.EngineCore
         public Scene()
         {
             entities = new List<Entity>();
-
-            // TODO - Remove once scene loading implemented
-            Entity player = new Entity()
-            {
-                Name = "Player"
-            };
-            Component c = new SpriteRenderer();
-            player.AddComponent(c);
-
-            entities.Add(player);
         }
 
         // Update the scene and all the entities in it

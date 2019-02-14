@@ -32,17 +32,7 @@ namespace GameEngine2D.EngineCore
 
         public Game()
         {
-            ProjectLoader.Instance.Initialize();
-
-            // TODO - ACK
-            ProjectLoader.Instance.LoadProject("D:/James/Documents/CSG Engine/Projects/TestProject");
-            foreach(KeyValuePair<string, string> pair in ProjectLoader.Instance.Scenes)
-            {
-                Console.WriteLine(pair.Key + ": " + pair.Value);
-            }
-
-            // TODO - Scene Loading and Caching
-            scene = new Scene();
+            ProjectManager.Instance.Initialize();
 
             // Create a window
             renderForm = new RenderForm("2D Game Engine");
@@ -88,7 +78,8 @@ namespace GameEngine2D.EngineCore
 
         public void Start()
         {
-            if (!running)
+            // Can't start if the game is already running or if there is no scene
+            if (!running && scene != null)
             {
                 running = true;
                 RenderLoop.Run(renderForm, Update);
@@ -112,6 +103,26 @@ namespace GameEngine2D.EngineCore
 
             // Swap the front and back buffers
             swapChain.Present(1, PresentFlags.None);
+        }
+
+        // Switch the current scene to the scene specified
+        // If the scene is not loaded, will block until loaded
+        public void SwitchScene(string sceneName)
+        {
+            if(sceneName != null)
+            {
+                if(ProjectManager.Instance.LoadedScenes.ContainsKey(sceneName))
+                {
+                    // Scene is already loaded so switch to it
+                    scene = ProjectManager.Instance.LoadedScenes[sceneName];
+                }
+                else if(ProjectManager.Instance.Scenes.ContainsKey(sceneName))
+                {
+                    // Scene not loaded but does exist, therefore, load scene then switch
+                    ProjectManager.Instance.LoadScene(sceneName);
+                    scene = ProjectManager.Instance.LoadedScenes[sceneName];
+                }
+            }
         }
 
         public void Dispose()

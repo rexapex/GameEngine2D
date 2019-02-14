@@ -63,6 +63,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetManagement\AssetManager.cs" />
+    <Compile Include="AssetManagement\ProjectInfo.cs" />
+    <Compile Include="AssetManagement\ProjectLoader.cs" />
+    <Compile Include="AssetManagement\TextureLoader.cs" />
     <Compile Include="EngineCore\Scene.cs" />
     <Compile Include="EntitySystem\Component.cs" />
     <Compile Include="EntitySystem\Entity.cs" />

@@ -10,6 +10,7 @@ using SharpDX.DXGI;
 using SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using GameEngine2D.Rendering;
+using GameEngine2D.AssetManagement;
 
 namespace GameEngine2D.EngineCore
 {
@@ -31,6 +32,15 @@ namespace GameEngine2D.EngineCore
 
         public Game()
         {
+            ProjectLoader.Instance.Initialize();
+
+            // TODO - ACK
+            ProjectLoader.Instance.LoadProject("D:/James/Documents/CSG Engine/Projects/TestProject");
+            foreach(KeyValuePair<string, string> pair in ProjectLoader.Instance.Scenes)
+            {
+                Console.WriteLine(pair.Key + ": " + pair.Value);
+            }
+
             // TODO - Scene Loading and Caching
             scene = new Scene();
 

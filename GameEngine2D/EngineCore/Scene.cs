@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GameEngine2D.EntitySystem;
 using GameEngine2D.Rendering;
+using SharpDX;
 
 namespace GameEngine2D.EngineCore
 {
@@ -28,11 +29,14 @@ namespace GameEngine2D.EngineCore
         }
 
         // Draw the scene and all the entities in it
-        public void Draw()
+        public void Draw(Matrix projMatrix)
         {
+            // TODO - Probably store main camera ref in Scene
+            // TODO - Calculate viewProjMatrix and send to entities
+
             foreach (Entity e in entities)
             {
-                e.Draw();
+                e.Draw(projMatrix);
             }
         }
 

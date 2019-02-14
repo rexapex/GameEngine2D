@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GameEngine2D.EntitySystem;
+using SharpDX;
 
 namespace GameEngine2D.Rendering
 {
@@ -14,7 +15,7 @@ namespace GameEngine2D.Rendering
 
         }
 
-        public void Draw()
+        public void Draw(Matrix worldViewProjMatrix)
         {
 
         }

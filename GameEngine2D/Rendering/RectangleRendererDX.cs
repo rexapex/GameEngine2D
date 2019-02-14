@@ -41,6 +41,8 @@ namespace GameEngine2D.Rendering
         private D3D11.InputLayout inputLayout;
         private D3D11.SamplerState samplerState;
 
+        private D3D11.Buffer worldViewProjBuffer;
+
         public void Initialize(D3D11.Device d3dDevice, D3D11.DeviceContext d3dDeviceContext)
         {
             if(d3dDevice != null && d3dDeviceContext != null && !instance.initialized)
@@ -53,6 +55,7 @@ namespace GameEngine2D.Rendering
                 this.d3dDeviceContext = d3dDeviceContext;
 
                 // Vertices of the rectangle
+                // Rectangle drawn as two triangles
                 VertexXYUV[] vertices = new VertexXYUV[]
                 {
                     new VertexXYUV(new Vector2(0, 1), new Vector2(0, 0)),
@@ -98,10 +101,14 @@ namespace GameEngine2D.Rendering
                         AddressW = D3D11.TextureAddressMode.Wrap,
                         Filter = D3D11.Filter.MinMagMipLinear
                     });
+
+                // Create the world view projection buffer
+                worldViewProjBuffer = new SharpDX.Direct3D11.Buffer(d3dDevice, Utilities.SizeOf<Matrix>(), D3D11.ResourceUsage.Default,
+                    D3D11.BindFlags.ConstantBuffer, D3D11.CpuAccessFlags.None, D3D11.ResourceOptionFlags.None, 0);
             }
         }
 
-        public void Draw(D3D11.Texture2D texture)
+        public void Draw(Matrix worldViewProjMatrix, D3D11.Texture2D texture)
         {
             // Set the shaders to use for the draw operation
             d3dDeviceContext.VertexShader.Set(vertexShader);
@@ -117,6 +124,11 @@ namespace GameEngine2D.Rendering
             var textureView = new D3D11.ShaderResourceView(d3dDevice, texture);
             d3dDeviceContext.PixelShader.SetShaderResource(0, textureView);
             d3dDeviceContext.PixelShader.SetSampler(0, samplerState);
+            textureView.Dispose();
+
+            // Pass the world view projection matrix to the vertex shader
+            d3dDeviceContext.VertexShader.SetConstantBuffer(0, worldViewProjBuffer);
+            d3dDeviceContext.UpdateSubresource(ref worldViewProjMatrix, worldViewProjBuffer);
 
             // Draw the rectangle
             d3dDeviceContext.InputAssembler.SetVertexBuffers(0, new D3D11.VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexXYUV>(), 0));
@@ -130,6 +142,8 @@ namespace GameEngine2D.Rendering
             pixelShader.Dispose();
             inputLayout.Dispose();
             inputSignature.Dispose();
+            worldViewProjBuffer.Dispose();
+            samplerState.Dispose();
         }
     }
 }

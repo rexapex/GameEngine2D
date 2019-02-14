@@ -21,8 +21,11 @@ namespace GameEngine2D.AssetManagement
 
         // Load a texture from a file
         // https://stackoverflow.com/questions/36068631/sharpdx-3-0-2-d3d11-how-to-load-texture-from-file-and-make-it-to-work-in-shade
-        public D3D11.Texture2D loadTexture(string path)
+        public D3D11.Texture2D loadTexture(string path, out int width, out int height)
         {
+            width = 0;
+            height = 0;
+
             // Load the texture from the file path
             Bitmap bitmap = null;
             try
@@ -60,6 +63,8 @@ namespace GameEngine2D.AssetManagement
             }, new SharpDX.DataRectangle(data.Scan0, data.Stride));
 
             // Return bitmap data
+            width = bitmap.Width;
+            height = bitmap.Height;
             bitmap.UnlockBits(data);
             bitmap.Dispose();
             return tex;

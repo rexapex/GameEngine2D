@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX;
 
 namespace GameEngine2D.EntitySystem
 {
@@ -40,16 +41,18 @@ namespace GameEngine2D.EntitySystem
         }
 
         // Draw the entity, its child entities and its components
-        public void Draw()
+        public void Draw(Matrix viewProjMatrix)
         {
+            // TODO - Multiply view proj matrix by model matrix
+
             foreach (Entity e in entities)
             {
-                e.Draw();
+                e.Draw(viewProjMatrix);
             }
 
             foreach (IComponentDrawable c in components.OfType<IComponentDrawable>())
             {
-                c.Draw();
+                c.Draw(viewProjMatrix);
             }
         }
 

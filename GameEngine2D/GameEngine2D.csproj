@@ -66,6 +66,7 @@
     <Compile Include="AssetManagement\AssetManager.cs" />
     <Compile Include="AssetManagement\ProjectInfo.cs" />
     <Compile Include="AssetManagement\ProjectManager.cs" />
+    <Compile Include="AssetManagement\TextureDX.cs" />
     <Compile Include="AssetManagement\TextureLoader.cs" />
     <Compile Include="EngineCore\Scene.cs" />
     <Compile Include="EntitySystem\Component.cs" />

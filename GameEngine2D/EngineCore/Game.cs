@@ -26,6 +26,8 @@ namespace GameEngine2D.EngineCore
         private SwapChain swapChain;
         private Viewport viewport;
 
+        private Matrix orthoProjMatrix;
+
         private Scene scene;
 
         private bool running = false;
@@ -72,6 +74,9 @@ namespace GameEngine2D.EngineCore
             viewport = new Viewport(0, 0, Width, Height);
             d3dDeviceContext.Rasterizer.SetViewport(viewport);
 
+            // Create the orthographic projection matrix
+            orthoProjMatrix = Matrix.OrthoOffCenterLH(0, Width, 0, Height, 0.0f, 100.0f);
+
             // Initialize everything which requires reference to the d3d device
             AssetManager.Instance.Initialize(d3dDevice);
             RectangleRendererDX.Instance.Initialize(d3dDevice, d3dDeviceContext);
@@ -100,7 +105,7 @@ namespace GameEngine2D.EngineCore
             d3dDeviceContext.ClearRenderTargetView(renderTargetView, new SharpDX.Color(127, 178, 229));
 
             // Draw the scene
-            scene.Draw();
+            scene.Draw(orthoProjMatrix);
 
             // Swap the front and back buffers
             swapChain.Present(1, PresentFlags.None);

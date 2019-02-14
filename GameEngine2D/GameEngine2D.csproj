@@ -80,6 +80,7 @@
     <Compile Include="Rendering\AnimatedSpriteRenderer.cs" />
     <Compile Include="Rendering\RectangleRendererDX.cs" />
     <Compile Include="Rendering\SpriteRenderer.cs" />
+    <Compile Include="Rendering\VertexXYUV.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

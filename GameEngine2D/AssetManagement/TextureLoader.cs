@@ -31,7 +31,7 @@ namespace GameEngine2D.AssetManagement
             }
             catch(System.IO.FileNotFoundException e)
             {
-                Console.WriteLine(e.Source, e.Data);
+                Console.WriteLine(e.Source + ", " + e.Data);
                 return null;
             }
 
@@ -61,6 +61,7 @@ namespace GameEngine2D.AssetManagement
 
             // Return bitmap data
             bitmap.UnlockBits(data);
+            bitmap.Dispose();
             return tex;
         }
     }

@@ -170,7 +170,12 @@ namespace GameEngine2D.AssetManagement
         // Parse the xml node of a sprite renderer component
         private void ParseSpriteRenderer(XElement componentNode, SpriteRenderer c)
         {
-
+            var textureNode = componentNode.Element("texture");
+            if(textureNode != null)
+            {
+                // Add the texture to the asset manager
+                c.Texture = AssetManager.Instance.AddTexture(projectPath + "/" + textureNode.Value.ToString());
+            }
         }
 
         // Load the scene_declerations.xml file

@@ -72,7 +72,8 @@ namespace GameEngine2D.EngineCore
             viewport = new Viewport(0, 0, Width, Height);
             d3dDeviceContext.Rasterizer.SetViewport(viewport);
 
-            // Initialize the rectangle renderer
+            // Initialize everything which requires reference to the d3d device
+            AssetManager.Instance.Initialize(d3dDevice);
             RectangleRendererDX.Instance.Initialize(d3dDevice, d3dDeviceContext);
         }
 

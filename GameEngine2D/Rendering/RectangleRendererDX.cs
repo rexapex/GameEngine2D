@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX;
+using SharpDX.Direct3D;
 using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -38,6 +39,7 @@ namespace GameEngine2D.Rendering
         private D3D11.PixelShader pixelShader;
         private ShaderSignature inputSignature;
         private D3D11.InputLayout inputLayout;
+        private D3D11.SamplerState samplerState;
 
         public void Initialize(D3D11.Device d3dDevice, D3D11.DeviceContext d3dDeviceContext)
         {
@@ -51,16 +53,19 @@ namespace GameEngine2D.Rendering
                 this.d3dDeviceContext = d3dDeviceContext;
 
                 // Vertices of the rectangle
-                Vector2[] vertices = new Vector2[]
+                VertexXYUV[] vertices = new VertexXYUV[]
                 {
-                    new Vector2(-0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f),
-                    new Vector2(0.0f, -0.5f)
+                    new VertexXYUV(new Vector2(0, 1), new Vector2(0, 0)),
+                    new VertexXYUV(new Vector2(1, 1), new Vector2(1, 0)),
+                    new VertexXYUV(new Vector2(1, 0), new Vector2(1, 1)),
+                    new VertexXYUV(new Vector2(1, 0), new Vector2(1, 1)),
+                    new VertexXYUV(new Vector2(0, 0), new Vector2(0, 1)),
+                    new VertexXYUV(new Vector2(0, 1), new Vector2(0, 0))
                 };
                 numVertices = vertices.Count();
 
                 // Create a vertex buffer
-                vertexBuffer = D3D11.Buffer.Create<Vector2>(d3dDevice, D3D11.BindFlags.VertexBuffer, vertices);
+                vertexBuffer = D3D11.Buffer.Create(d3dDevice, D3D11.BindFlags.VertexBuffer, vertices);
                 
                 // Create the vertex and pixel shaders
                 using (var vertexShaderByteCode = ShaderBytecode.CompileFromFile("EngineAssets/VertexShader.hlsl", "main", "vs_4_0", ShaderFlags.Debug))
@@ -77,15 +82,26 @@ namespace GameEngine2D.Rendering
                 inputElements = new D3D11.InputElement[]
                 {
                     // R32G32_Float tells d3d that a position is a Vector2 of floats
-                    new D3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32_Float, 0)
+                    new D3D11.InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32_Float, 0, 0, D3D11.InputClassification.PerVertexData, 0),
+                    new D3D11.InputElement("TEXTUREUV", 0, SharpDX.DXGI.Format.R32G32_Float, 8, 0, D3D11.InputClassification.PerVertexData, 0)
                 };
 
                 // Create the input layout matching the input elements to shader input signature
                 inputLayout = new D3D11.InputLayout(d3dDevice, inputSignature, inputElements);
+
+                // Create the sampler used to sample textures in the shaders
+                samplerState = new D3D11.SamplerState(d3dDevice, 
+                    new D3D11.SamplerStateDescription
+                    {
+                        AddressU = D3D11.TextureAddressMode.Wrap,
+                        AddressV = D3D11.TextureAddressMode.Wrap,
+                        AddressW = D3D11.TextureAddressMode.Wrap,
+                        Filter = D3D11.Filter.MinMagMipLinear
+                    });
             }
         }
 
-        public void Draw()
+        public void Draw(D3D11.Texture2D texture)
         {
             // Set the shaders to use for the draw operation
             d3dDeviceContext.VertexShader.Set(vertexShader);
@@ -97,8 +113,13 @@ namespace GameEngine2D.Rendering
             // Set the input layout of the vertices
             d3dDeviceContext.InputAssembler.InputLayout = inputLayout;
 
+            // Bind the texture resource to the pixel shader
+            var textureView = new D3D11.ShaderResourceView(d3dDevice, texture);
+            d3dDeviceContext.PixelShader.SetShaderResource(0, textureView);
+            d3dDeviceContext.PixelShader.SetSampler(0, samplerState);
+
             // Draw the rectangle
-            d3dDeviceContext.InputAssembler.SetVertexBuffers(0, new D3D11.VertexBufferBinding(vertexBuffer, Utilities.SizeOf<Vector2>(), 0));
+            d3dDeviceContext.InputAssembler.SetVertexBuffers(0, new D3D11.VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexXYUV>(), 0));
             d3dDeviceContext.Draw(numVertices, 0);
         }
 

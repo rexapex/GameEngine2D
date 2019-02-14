@@ -1,4 +1,13 @@
-﻿float4 main(float4 position : SV_POSITION) : SV_TARGET
+﻿Texture2D ShaderTexture : register(t0);
+SamplerState Sampler : register(s0);
+
+struct VSOut
 {
-	return float4(1.0, 0.0, 0.0, 1.0);
+	float4 position : SV_POSITION;
+	float2 textureUV : TEXCOORD0;
+};
+
+float4 main(VSOut input) : SV_TARGET
+{
+	return ShaderTexture.Sample(Sampler, input.textureUV);
 }

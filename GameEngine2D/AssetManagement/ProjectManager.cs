@@ -88,7 +88,7 @@ namespace GameEngine2D.AssetManagement
                 {
                     if(child.Name == "entity")
                     {
-                        Entity e = new Entity();
+                        Entity e = new Entity(null);
                         ParseEntity(child, e);
                         s.AddEntity(e);
                     }
@@ -115,14 +115,12 @@ namespace GameEngine2D.AssetManagement
                     switch(child.Name.ToString())
                     {
                         case "entity":
-                            Entity e2 = new Entity();
+                            Entity e2 = new Entity(e);
                             ParseEntity(child, e2);
                             e.AddEntity(e2);
                             break;
                         case "transform":
-                            Transform t = new Transform();
-                            ParseTransform(child, t);
-                            // TODO - Set the transform of e to t
+                            ParseTransform(child, e.Transform);
                             break;
                         case "sprite-renderer":
                             SpriteRenderer c = new SpriteRenderer();

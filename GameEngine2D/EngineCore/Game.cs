@@ -11,6 +11,7 @@ using SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using GameEngine2D.Rendering;
 using GameEngine2D.AssetManagement;
+using GameEngine2D.Input;
 
 namespace GameEngine2D.EngineCore
 {
@@ -30,6 +31,8 @@ namespace GameEngine2D.EngineCore
 
         private Scene scene;
 
+        private InputManager inputManager;
+
         private bool running = false;
 
         public Game()
@@ -43,6 +46,9 @@ namespace GameEngine2D.EngineCore
             
             // Initialize Direct3D
             InitializeDeviceResources();
+
+            // Initialize the input manager
+            inputManager = new InputManager();
         }
 
         private void InitializeDeviceResources()
@@ -94,6 +100,7 @@ namespace GameEngine2D.EngineCore
 
         private void Update()
         {
+            inputManager.Update();
             scene.Update();
             Draw();
         }

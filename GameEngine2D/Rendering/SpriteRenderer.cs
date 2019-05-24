@@ -16,7 +16,8 @@ namespace GameEngine2D.Rendering
 
         public void Draw(Matrix worldViewProjMatrix)
         {
-            // TODO - Multiply by scale matrix based on texture dimensions
+            // Multiply by scale matrix to scale to texture's dimensions
+            // Rectangle renderer renders a 1x1 rectangle by default
             worldViewProjMatrix = Texture.BaseTextureScale * worldViewProjMatrix;
 
             if(Texture != null)

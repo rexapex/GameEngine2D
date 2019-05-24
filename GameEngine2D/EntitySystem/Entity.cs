@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX;
+using GameEngine2D.Math;
 
 namespace GameEngine2D.EntitySystem
 {
@@ -14,16 +15,25 @@ namespace GameEngine2D.EntitySystem
         // Name is displayed in the editor
         public string Name { get; set; }
 
+        // The parent entity of this entity object
+        // Can be null if entity belongs to scene
+        public Entity Parent { get; private set; }
+
         // List of child entities
         private List<Entity> entities;
 
         // List of components
         private List<Component> components;
 
-        public Entity()
+        // Every entity has a transform component
+        public Transform Transform { get; private set; }
+
+        public Entity(Entity parent)
         {
+            Parent = parent;
             entities = new List<Entity>();
             components = new List<Component>();
+            Transform = new Transform(this);
         }
 
         // Update the entity, its child entities and its components
@@ -43,16 +53,19 @@ namespace GameEngine2D.EntitySystem
         // Draw the entity, its child entities and its components
         public void Draw(Matrix viewProjMatrix)
         {
-            // TODO - Multiply view proj matrix by model matrix
+            // Calculate the world view projection matrix of the entity
+            Matrix wvp = Transform.WorldMatrix * viewProjMatrix;
 
+            // Draw all child entities
             foreach (Entity e in entities)
             {
                 e.Draw(viewProjMatrix);
             }
 
+            // Call the draw method of each drawable component of the entity
             foreach (IComponentDrawable c in components.OfType<IComponentDrawable>())
             {
-                c.Draw(viewProjMatrix);
+                c.Draw(wvp);
             }
         }
 

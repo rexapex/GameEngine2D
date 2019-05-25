@@ -17,10 +17,9 @@ namespace GameEngine2D
         {
             using (Game game = new Game())
             {
-                // TODO - ACK
                 ProjectManager.Instance.LoadProject("D:/James/Documents/CSG Engine/Projects/TestProject");
-                ProjectManager.Instance.LoadScene("scene1");
-                game.SwitchScene("scene1");
+                game.InitializeInputManager(ProjectManager.Instance.InputManager);
+                game.SwitchScene(ProjectManager.Instance.DefaultSceneName);
                 game.Start();
             }
             Console.ReadKey();

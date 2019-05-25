@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Globalization;
 using GameEngine2D.EngineCore;
 using GameEngine2D.EntitySystem;
 using GameEngine2D.Rendering;
 using GameEngine2D.Math;
-using System.Globalization;
+using GameEngine2D.Input;
 
 namespace GameEngine2D.AssetManagement
 {
@@ -42,6 +43,12 @@ namespace GameEngine2D.AssetManagement
         // Only contains scenes which have been explicitly loaded
         public Dictionary<string, Scene> LoadedScenes { get; private set; }
 
+        // The input manager, initially set to default input when loaded
+        public InputManager InputManager { get; private set; }
+
+        // The name of the default scene, i.e. the first scene to load on game start
+        public string DefaultSceneName { get; private set; }
+
         public void Initialize()
         {
             if (!initialized)
@@ -67,8 +74,11 @@ namespace GameEngine2D.AssetManagement
 
             // Load the scene declerations
             LoadSceneDeclerationsFile(projectPath + "/scene_declerations.xml");
-            
+
             // TODO - Load tags
+
+            // Load the default input setup
+            LoadInputFile(projectPath + "/input.xml");
         }
 
         // Load a scene
@@ -201,6 +211,11 @@ namespace GameEngine2D.AssetManagement
                         {
                             Scenes[sceneName] = scenePath;
                         }
+                        // Check if the scene is the default scene
+                        if(child.Attribute("default") != null)
+                        {
+                            DefaultSceneName = sceneName;
+                        }
                     }
                 }
             }
@@ -245,6 +260,84 @@ namespace GameEngine2D.AssetManagement
 
             // Set the project info property
             ProjectInfo = new ProjectInfo(name, engineVersion, gameVersion, dateCreated, dateModified);
+        }
+
+        // Load the info.xml file
+        // File should be at the project root
+        private void LoadInputFile(string path)
+        {
+            // Create an input manager to load to
+            InputManager = new InputManager();
+
+            // Load the xml file
+            XElement root = XElement.Load(path);
+
+            // In info file, all elements are direct children of root
+            foreach (XElement child in root.Elements())
+            {
+                // All boolean and axis inputs must have a name
+                if (child.Attribute("name") != null)
+                {
+                    string inputName = child.Attribute("name").Value.ToString();
+                    switch (child.Name.ToString())
+                    {
+                        // Boolean inputs are used for on/off type input
+                        case "boolean":
+                            BooleanInput b = new BooleanInput(inputName);
+                            ParseBooleanInput(child, b);
+                            InputManager.AddBooleanInput(b);
+                            break;
+                        // Axis inputs are used for variable strength input with 2 endpoints
+                        case "axis":
+                            ///AxisInput a = new AxisInput(inputName);
+                            // TODO
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Parse a list of input methods within a boolean/axis input
+        private void ParseBooleanInput(XElement parent, BooleanInput booleanInput)
+        {
+            foreach(XElement inputNode in parent.Elements())
+            {
+                switch (inputNode.Name.ToString())
+                {
+                    case "key":
+                        // Get the key required by input method
+                        int key = int.Parse(inputNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                        // Create the new input method
+                        Input.Input i = new KeyboardInput((SharpDX.DirectInput.Key)key);
+                        // Add the input method to the boolean input
+                        booleanInput.AddInput(i);
+                        break;
+                    case "mouse":
+                        // Get the mouse button required by input method
+                        int btn = int.Parse(inputNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                        // Create the new input method
+                        // TODO
+                        break;
+                }
+            }
+        }
+
+        // Parse a list of input methods within a boolean/axis input
+        private void ParseAxisInput(XElement parent)
+        {
+            // Axis contains 2 input groups, the positive input methods and the negative input methods
+            foreach (XElement c in parent.Elements())
+            {
+                switch (c.Name.ToString())
+                {
+                    case "pos":
+                  //      ParseBool(c);
+                        break;
+                    case "neg":
+                  //      ParseInputMethods(c);
+                        break;
+                }
+            }
         }
     }
 }

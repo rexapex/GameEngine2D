@@ -20,6 +20,29 @@ namespace GameEngine2D.Input
             inputs = new List<Input>();
         }
 
+        public void UpdateState()
+        {
+            State = false;
+            // State is set to true iff at least one of the input methods is true
+            foreach(Input i in inputs)
+            {
+                if(i.State)
+                {
+                    State = true;
+                    return;
+                }
+            }
+        }
+
+        public void onKeyUpdate(Key key, bool pressed)
+        {
+            // Update each individual input based on the key press
+            foreach(Input i in inputs)
+            {
+                i.UpdateState(key, pressed);
+            }
+        }
+
         public void AddInput(Input input)
         {
             if(input != null)

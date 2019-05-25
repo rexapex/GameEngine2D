@@ -15,5 +15,14 @@ namespace GameEngine2D.Input
         {
             Key = key;
         }
+
+        // If the input method match, the input state is updated
+        public override void UpdateState(Key key, bool keydown)
+        {
+            if(Key == key)
+            {
+                State = keydown;
+            }
+        }
     }
 }

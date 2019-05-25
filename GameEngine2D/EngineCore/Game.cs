@@ -46,9 +46,6 @@ namespace GameEngine2D.EngineCore
             
             // Initialize Direct3D
             InitializeDeviceResources();
-
-            // Initialize the input manager
-            inputManager = new InputManager();
         }
 
         private void InitializeDeviceResources()
@@ -135,6 +132,15 @@ namespace GameEngine2D.EngineCore
                     ProjectManager.Instance.LoadScene(sceneName);
                     scene = ProjectManager.Instance.LoadedScenes[sceneName];
                 }
+            }
+        }
+
+        // Set the input manager and all allowed inputs
+        public void InitializeInputManager(InputManager i)
+        {
+            if(i != null)
+            {
+                inputManager = i;
             }
         }
 

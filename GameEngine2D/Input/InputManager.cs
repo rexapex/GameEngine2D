@@ -17,6 +17,9 @@ namespace GameEngine2D.Input
         // Boolean inputs
         private Dictionary<string, BooleanInput> booleanInputs;
 
+        /// Map from Key to Input method
+        /// Used for quick updating of input methods
+
         public InputManager()
         {
             // Instantiate direct input objects
@@ -43,7 +46,7 @@ namespace GameEngine2D.Input
             foreach(var state in mouse.GetBufferedData())
             {
                 // NOTE - state contains Offset and Value fields
-                Console.WriteLine(state);
+                
             }
 
             // Poll the keyboard
@@ -51,7 +54,16 @@ namespace GameEngine2D.Input
             foreach(var state in keyboard.GetBufferedData())
             {
                 // NOTE - state contains Key and IsPressed fields
-                
+                foreach(var pair in booleanInputs)
+                {
+                    pair.Value.onKeyUpdate(state.Key, state.IsPressed);
+                }
+            }
+
+            // Update the state of each boolean input
+            foreach(var pair in booleanInputs)
+            {
+                pair.Value.UpdateState();
             }
         }
 
@@ -78,6 +90,16 @@ namespace GameEngine2D.Input
             {
                 booleanInputs.Remove(name);
                 return true;
+            }
+            return false;
+        }
+
+        // Get the value of a boolean input
+        public bool GetBooleanInput(string name)
+        {
+            if (booleanInputs.ContainsKey(name))
+            {
+                return booleanInputs[name].State;
             }
             return false;
         }

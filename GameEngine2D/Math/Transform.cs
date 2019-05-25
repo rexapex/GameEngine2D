@@ -8,7 +8,7 @@ using GameEngine2D.EntitySystem;
 
 namespace GameEngine2D.Math
 {
-    class Transform
+    public class Transform
     {
         // IMPORTANT - Ignore VS2017 Redundancy Notifications
         // Replacing private variables with auto properties are not equivalent in this case

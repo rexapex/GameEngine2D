@@ -18,7 +18,6 @@ namespace GameEngine2D
             using (Game game = new Game())
             {
                 ProjectManager.Instance.LoadProject("D:/James/Documents/CSG Engine/Projects/TestProject");
-                game.InitializeInputManager(ProjectManager.Instance.InputManager);
                 game.SwitchScene(ProjectManager.Instance.DefaultSceneName);
                 game.Start();
             }

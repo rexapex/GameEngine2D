@@ -7,7 +7,7 @@ using SharpDX.DirectInput;
 
 namespace GameEngine2D.Input
 {
-    class KeyboardInput : Input
+    public class KeyboardInput : Input
     {
         public Key Key { get; private set; }
 

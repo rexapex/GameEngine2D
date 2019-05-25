@@ -75,6 +75,7 @@
     <Compile Include="EntitySystem\Component.cs" />
     <Compile Include="EntitySystem\Entity.cs" />
     <Compile Include="EntitySystem\IComponentDrawable.cs" />
+    <Compile Include="EntitySystem\IComponentInitializable.cs" />
     <Compile Include="EntitySystem\IComponentUpdatable.cs" />
     <Compile Include="Input\AxisInput.cs" />
     <Compile Include="Input\BooleanInput.cs" />
@@ -90,6 +91,8 @@
     <Compile Include="Rendering\RectangleRendererDX.cs" />
     <Compile Include="Rendering\SpriteRenderer.cs" />
     <Compile Include="Rendering\VertexXYUV.cs" />
+    <Compile Include="Scripting\IScript.cs" />
+    <Compile Include="Scripting\Script.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

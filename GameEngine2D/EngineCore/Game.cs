@@ -31,8 +31,6 @@ namespace GameEngine2D.EngineCore
 
         private Scene scene;
 
-        private InputManager inputManager;
-
         private bool running = false;
 
         public Game()
@@ -97,7 +95,7 @@ namespace GameEngine2D.EngineCore
 
         private void Update()
         {
-            inputManager.Update();
+            InputManager.Instance.Update();
             scene.Update();
             Draw();
         }
@@ -132,15 +130,7 @@ namespace GameEngine2D.EngineCore
                     ProjectManager.Instance.LoadScene(sceneName);
                     scene = ProjectManager.Instance.LoadedScenes[sceneName];
                 }
-            }
-        }
-
-        // Set the input manager and all allowed inputs
-        public void InitializeInputManager(InputManager i)
-        {
-            if(i != null)
-            {
-                inputManager = i;
+                scene.OnSceneSwitch();
             }
         }
 

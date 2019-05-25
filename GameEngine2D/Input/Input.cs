@@ -7,7 +7,7 @@ using SharpDX.DirectInput;
 
 namespace GameEngine2D.Input
 {
-    abstract class Input
+    public abstract class Input
     {
         public bool State { get; protected set; }
 

@@ -7,7 +7,7 @@ using SharpDX.DirectInput;
 
 namespace GameEngine2D.Input
 {
-    class AxisInput
+    public class AxisInput
     {
         public string Name { get; private set; }
         public float Value { get; private set; }    // Value between -1 and 1 inclusively

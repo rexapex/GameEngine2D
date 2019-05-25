@@ -9,7 +9,7 @@ using GameEngine2D.Math;
 
 namespace GameEngine2D.EntitySystem
 {
-    class Entity
+    public class Entity
     {
         // The name of the entity
         // Name is displayed in the editor
@@ -34,6 +34,20 @@ namespace GameEngine2D.EntitySystem
             entities = new List<Entity>();
             components = new List<Component>();
             Transform = new Transform(this);
+        }
+
+        // Initialize the entity, i.e. initialized its components
+        public void Initialize()
+        {
+            foreach (Entity e in entities)
+            {
+                e.Initialize();
+            }
+
+            foreach (IComponentInitializable c in components.OfType<IComponentInitializable>())
+            {
+                c.Initialize();
+            }
         }
 
         // Update the entity, its child entities and its components

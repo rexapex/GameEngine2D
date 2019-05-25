@@ -5,17 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Globalization;
+using System.Reflection;
 using GameEngine2D.EngineCore;
 using GameEngine2D.EntitySystem;
 using GameEngine2D.Rendering;
 using GameEngine2D.Math;
 using GameEngine2D.Input;
+using GameEngine2D.Scripting;
 
 namespace GameEngine2D.AssetManagement
 {
     class ProjectManager
     {
-        // Makes use of the singleton pattern since only one asset manager will ever be needed
+        // Makes use of the singleton pattern since only one project manager will ever be needed
         private static readonly ProjectManager instance = new ProjectManager();
 
         private static bool initialized = false;
@@ -42,12 +44,12 @@ namespace GameEngine2D.AssetManagement
         // The map from scene name to scene object
         // Only contains scenes which have been explicitly loaded
         public Dictionary<string, Scene> LoadedScenes { get; private set; }
-
-        // The input manager, initially set to default input when loaded
-        public InputManager InputManager { get; private set; }
-
+        
         // The name of the default scene, i.e. the first scene to load on game start
         public string DefaultSceneName { get; private set; }
+
+        // The DLL storing the game scripts
+        private Assembly scriptsDll;
 
         public void Initialize()
         {
@@ -79,6 +81,9 @@ namespace GameEngine2D.AssetManagement
 
             // Load the default input setup
             LoadInputFile(projectPath + "/input.xml");
+
+            // Load the scripts dll
+            LoadScriptsDLL(projectPath + "/Scripts.dll");
         }
 
         // Load a scene
@@ -133,9 +138,14 @@ namespace GameEngine2D.AssetManagement
                             ParseTransform(child, e.Transform);
                             break;
                         case "sprite-renderer":
-                            SpriteRenderer c = new SpriteRenderer();
+                            SpriteRenderer c = new SpriteRenderer(e);
                             ParseSpriteRenderer(child, c);
                             e.AddComponent(c);
+                            break;
+                        case "script":
+                            Script s = new Script(e);
+                            ParseScript(child, s);
+                            e.AddComponent(s);
                             break;
                     }
                 }
@@ -178,11 +188,53 @@ namespace GameEngine2D.AssetManagement
         // Parse the xml node of a sprite renderer component
         private void ParseSpriteRenderer(XElement componentNode, SpriteRenderer c)
         {
+            // Parse the component name if there is one
+            if(componentNode.Attribute("name") != null)
+            {
+                c.Name = componentNode.Attribute("name").Value.ToString();
+            }
+
+            // Parse the texture node if there is one
             var textureNode = componentNode.Element("texture");
             if(textureNode != null)
             {
                 // Add the texture to the asset manager
                 c.Texture = AssetManager.Instance.AddTexture(projectPath + "/" + textureNode.Value.ToString());
+            }
+        }
+
+        // Parse the xml node of a script component
+        private void ParseScript(XElement scriptNode, Script s)
+        {
+            // Parse the component name if there is one
+            if (scriptNode.Attribute("name") != null)
+            {
+                s.Name = scriptNode.Attribute("name").Value.ToString();
+            }
+            
+            // Parse the source file node if there is one
+            var sourceNode = scriptNode.Element("source");
+            if (sourceNode != null)
+            {
+                s.SourceFile = sourceNode.Value.ToString();
+            }
+
+            // Parse the class name node if there is one
+            var classnameNode = scriptNode.Element("classname");
+            if (classnameNode != null)
+            {
+                s.ClassName = classnameNode.Value.ToString();
+            }
+
+            // If both source file and class name are given, add script to list of script components
+            if(sourceNode != null && classnameNode != null)
+            {
+                var t = scriptsDll.GetType(s.ClassName);
+                IScript i = Activator.CreateInstance(t) as IScript;
+                if (i != null)
+                {
+                    s.OnScriptLoad(i);
+                }
             }
         }
 
@@ -266,8 +318,8 @@ namespace GameEngine2D.AssetManagement
         // File should be at the project root
         private void LoadInputFile(string path)
         {
-            // Create an input manager to load to
-            InputManager = new InputManager();
+            // Initialize the input manager (done after DX context loaded)
+            InputManager.Instance.Initialize();
 
             // Load the xml file
             XElement root = XElement.Load(path);
@@ -285,13 +337,13 @@ namespace GameEngine2D.AssetManagement
                         case "boolean":
                             BooleanInput b = new BooleanInput(inputName);
                             ParseBooleanInput(child, b);
-                            InputManager.AddBooleanInput(b);
+                            InputManager.Instance.AddBooleanInput(b);
                             break;
                         // Axis inputs are used for variable strength input with 2 endpoints
                         case "axis":
                             AxisInput a = new AxisInput(inputName);
                             ParseAxisInput(child, a);
-                            InputManager.AddAxisInput(a);
+                            InputManager.Instance.AddAxisInput(a);
                             break;
                     }
                 }
@@ -358,6 +410,15 @@ namespace GameEngine2D.AssetManagement
                     }
                 }
             }
+        }
+
+        // Load the DLL used to store game scripts
+        private void LoadScriptsDLL(string path)
+        {
+            Console.WriteLine("Loading scripts dll");
+
+            // Load the scripts dll file
+            scriptsDll = Assembly.LoadFile(path);
         }
     }
 }

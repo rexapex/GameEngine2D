@@ -10,6 +10,8 @@ namespace GameEngine2D.Rendering
 {
     class AnimatedSpriteRenderer : Component, IComponentUpdatable, IComponentDrawable
     {
+        public AnimatedSpriteRenderer(Entity parent) : base(parent) {}
+
         public void Update()
         {
 

@@ -14,6 +14,8 @@ namespace GameEngine2D.Rendering
     {
         public TextureDX Texture { get; set; }
 
+        public SpriteRenderer(Entity parent) : base(parent) {}
+
         public void Draw(Matrix worldViewProjMatrix)
         {
             // Multiply by scale matrix to scale to texture's dimensions

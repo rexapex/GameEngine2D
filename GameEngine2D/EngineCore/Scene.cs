@@ -19,6 +19,15 @@ namespace GameEngine2D.EngineCore
             entities = new List<Entity>();
         }
 
+        // Called when a scene is switched to
+        public void OnSceneSwitch()
+        {
+            foreach (Entity e in entities)
+            {
+                e.Initialize();
+            }
+        }
+
         // Update the scene and all the entities in it
         public void Update()
         {

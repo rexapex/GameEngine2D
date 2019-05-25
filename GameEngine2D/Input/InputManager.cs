@@ -7,8 +7,23 @@ using SharpDX.DirectInput;
 
 namespace GameEngine2D.Input
 {
-    class InputManager
+    public class InputManager
     {
+        // Makes use of the singleton pattern since only one input manager will ever be needed
+        private static readonly InputManager instance = new InputManager();
+
+        private static bool initialized = false;
+
+        static InputManager() { }
+        
+        // Private constructor so no other instances can be made
+        private InputManager() { }
+
+        public static InputManager Instance
+        {
+            get => instance;
+        }
+
         // SharpDX objects
         private DirectInput directInput;
         private Keyboard keyboard;
@@ -23,24 +38,29 @@ namespace GameEngine2D.Input
         /// Map from Key to Input method
         /// Used for quick updating of input methods
 
-        public InputManager()
+        public void Initialize()
         {
-            // Instantiate direct input objects
-            directInput = new DirectInput();
-            keyboard = new Keyboard(directInput);
-            mouse = new Mouse(directInput);
+            if(!initialized)
+            {
+                initialized = true;
 
-            // Acquire the keyboard
-            keyboard.Properties.BufferSize = 128;
-            keyboard.Acquire();
+                // Instantiate direct input objects
+                directInput = new DirectInput();
+                keyboard = new Keyboard(directInput);
+                mouse = new Mouse(directInput);
 
-            // Acquire the mouse
-            mouse.Properties.BufferSize = 128;
-            mouse.Acquire();
+                // Acquire the keyboard
+                keyboard.Properties.BufferSize = 128;
+                keyboard.Acquire();
 
-            // Initialize input dictionaries
-            booleanInputs = new Dictionary<string, BooleanInput>();
-            axisInputs = new Dictionary<string, AxisInput>();
+                // Acquire the mouse
+                mouse.Properties.BufferSize = 128;
+                mouse.Acquire();
+
+                // Initialize input dictionaries
+                booleanInputs = new Dictionary<string, BooleanInput>();
+                axisInputs = new Dictionary<string, AxisInput>();
+            }
         }
 
         public void Update()

@@ -289,8 +289,9 @@ namespace GameEngine2D.AssetManagement
                             break;
                         // Axis inputs are used for variable strength input with 2 endpoints
                         case "axis":
-                            ///AxisInput a = new AxisInput(inputName);
-                            // TODO
+                            AxisInput a = new AxisInput(inputName);
+                            ParseAxisInput(child, a);
+                            InputManager.AddAxisInput(a);
                             break;
                     }
                 }
@@ -323,19 +324,38 @@ namespace GameEngine2D.AssetManagement
         }
 
         // Parse a list of input methods within a boolean/axis input
-        private void ParseAxisInput(XElement parent)
+        private void ParseAxisInput(XElement parent, AxisInput axisInput)
         {
             // Axis contains 2 input groups, the positive input methods and the negative input methods
             foreach (XElement c in parent.Elements())
             {
-                switch (c.Name.ToString())
+                bool pos = c.Name.ToString() == "pos";
+                foreach (XElement inputNode in c.Elements())
                 {
-                    case "pos":
-                  //      ParseBool(c);
-                        break;
-                    case "neg":
-                  //      ParseInputMethods(c);
-                        break;
+                    switch (inputNode.Name.ToString())
+                    {
+                        case "key":
+                            // Get the key required by input method
+                            int key = int.Parse(inputNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                            // Create the new input method
+                            Input.Input i = new KeyboardInput((SharpDX.DirectInput.Key)key);
+                            // Add the input method to the axis input
+                            if (pos)
+                            {
+                                axisInput.AddPosInput(i);
+                            }
+                            else
+                            {
+                                axisInput.AddNegInput(i);
+                            }
+                            break;
+                        case "mouse":
+                            // Get the mouse button required by input method
+                            int btn = int.Parse(inputNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
+                            // Create the new input method
+                            // TODO
+                            break;
+                    }
                 }
             }
         }

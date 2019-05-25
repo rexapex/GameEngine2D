@@ -29,7 +29,7 @@ namespace GameEngine2D.Input
                 if(i.State)
                 {
                     State = true;
-                    return;
+                    break;
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace GameEngine2D.Input
             }
         }
 
-        public void RemoveKey(Input input)
+        public void RemoveInput(Input input)
         {
             if (input != null)
             {

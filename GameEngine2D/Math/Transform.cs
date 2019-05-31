@@ -205,21 +205,11 @@ namespace GameEngine2D.Math
         // Update the global translation of this transform & all child transforms
         private void UpdateGlobalTranslation(Vector2 translation)
         {
-            if (Parent != null)
+            // Apply translation to this entities global translation vector
+            if (Parent != null && Parent.Parent != null)
             {
-                // Apply translation to this entities global translation vector
-                if (Parent.Parent != null)
-                {
-                    // Add the relative offset to the global position of this entities parent
-                    globalPosition = Parent.Parent.Transform.GlobalPosition + translation;
-                }
-                else
-                {
-                    globalPosition = translation;
-                }
-
-                // Calculate the world matrix of the transform
-                CalcWorldMatrix();
+                // Add the relative offset to the global position of this entities parent
+                globalPosition = Parent.Parent.Transform.GlobalPosition + translation;
 
                 // Apply translation to all child entities
                 foreach (Entity e in Parent.GetEntities())
@@ -227,25 +217,22 @@ namespace GameEngine2D.Math
                     e.Transform.UpdateGlobalTranslation(translation);
                 }
             }
+            else
+            {
+                globalPosition = translation;
+            }
+
+            // Calculate the world matrix of the transform
+            CalcWorldMatrix();
         }
 
         // Update the global scale of this transform & all child transforms
         private void UpdateGlobalScale(Vector2 scale)
         {
-            if (Parent != null)
+            if (Parent != null && Parent.Parent != null)
             {
                 // Apply scale to this entities global scale vector
-                if (Parent.Parent != null)
-                {
-                    globalScale = Parent.Parent.Transform.GlobalScale * scale;
-                }
-                else
-                {
-                    globalScale = scale;
-                }
-
-                // Calculate the world matrix of the transform
-                CalcWorldMatrix();
+                globalScale = Parent.Parent.Transform.GlobalScale * scale;
 
                 // Apply scale to all child entities
                 foreach (Entity e in Parent.GetEntities())
@@ -253,25 +240,22 @@ namespace GameEngine2D.Math
                     e.Transform.UpdateGlobalScale(scale);
                 }
             }
+            else
+            {
+                globalScale = scale;
+            }
+
+            // Calculate the world matrix of the transform
+            CalcWorldMatrix();
         }
 
         // Update the global rotation of this transform & all child transforms
         private void UpdateGlobalRotation(float rotation)
         {
-            if (Parent != null)
+            if (Parent != null && Parent.Parent != null)
             {
                 // Apply rotation to this entities global rotation value
-                if (Parent.Parent != null)
-                {
-                    globalRotation = (Parent.Parent.Transform.globalRotation + rotation) % MathConstants.Tau;
-                }
-                else
-                {
-                    globalRotation = rotation % MathConstants.Tau;
-                }
-
-                // Calculate the world matrix of the transform
-                CalcWorldMatrix();
+                globalRotation = (Parent.Parent.Transform.globalRotation + rotation) % MathConstants.Tau;
 
                 // Apply rotation to all child entities
                 foreach (Entity e in Parent.GetEntities())
@@ -279,8 +263,14 @@ namespace GameEngine2D.Math
                     e.Transform.UpdateGlobalRotation(rotation);
                 }
             }
-        }
+            else
+            {
+                globalRotation = rotation % MathConstants.Tau;
+            }
 
+            // Calculate the world matrix of the transform
+            CalcWorldMatrix();
+        }
 
         // Update the world matrix
         private void CalcWorldMatrix()

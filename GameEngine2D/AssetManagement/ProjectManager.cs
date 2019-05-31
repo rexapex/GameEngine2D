@@ -12,6 +12,7 @@ using GameEngine2D.Rendering;
 using GameEngine2D.Math;
 using GameEngine2D.Input;
 using GameEngine2D.Scripting;
+using GameEngine2D.Tiling;
 
 namespace GameEngine2D.AssetManagement
 {
@@ -75,7 +76,7 @@ namespace GameEngine2D.AssetManagement
             LoadProjectInfoFile(projectPath + "/info.xml");
 
             // Load the scene declerations
-            LoadSceneDeclerationsFile(projectPath + "/scene_declerations.xml");
+            LoadSceneDeclerationsFile(projectPath + "/scenes.xml");
 
             // TODO - Load tags
 
@@ -146,6 +147,11 @@ namespace GameEngine2D.AssetManagement
                             Script s = new Script(e);
                             ParseScript(child, s);
                             e.AddComponent(s);
+                            break;
+                        case "tilemap-renderer":
+                            TilemapRenderer t = new TilemapRenderer(e);
+                            ParseTilemapRenderer(child, t);
+                            e.AddComponent(t);
                             break;
                     }
                 }
@@ -238,7 +244,40 @@ namespace GameEngine2D.AssetManagement
             }
         }
 
-        // Load the scene_declerations.xml file
+        // Parse the xml node of a tilemap renderer component
+        private void ParseTilemapRenderer(XElement componentNode, TilemapRenderer t)
+        {
+            // Parse the component name if there is one
+            if (componentNode.Attribute("name") != null)
+            {
+                t.Name = componentNode.Attribute("name").Value.ToString();
+            }
+
+            // Parse the tileset node if there is one
+            var tilesetNode = componentNode.Element("tileset");
+            if (tilesetNode != null)
+            {
+                // Create the tileset object
+                t.Tileset = new Tileset();
+                // Parse the texture node if there is one
+                var textureNode = tilesetNode.Element("texture");
+                if (textureNode != null)
+                {
+                    // Add the texture to the asset manager
+                    t.Tileset.Texture = AssetManager.Instance.AddTexture(projectPath + "/" + textureNode.Value.ToString());
+                }
+            }
+
+            // Parse the tilemap node if there is one
+            var tilemapNode = componentNode.Element("tilemap");
+            if (tilemapNode != null)
+            {
+                // Load the tilemap
+                t.Tilemap = new Tilemap(AssetManager.Instance.AddTextFile(projectPath + "/" + tilemapNode.Value.ToString()));
+            }
+        }
+
+        // Load the scenes.xml file
         // File should be at the project root
         private void LoadSceneDeclerationsFile(string path)
         {

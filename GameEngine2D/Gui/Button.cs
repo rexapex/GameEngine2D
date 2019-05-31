@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameEngine2D.EntitySystem;
-using GameEngine2D.AssetManagement;
 using SharpDX;
-using D3D11 = SharpDX.Direct3D11;
+using GameEngine2D.AssetManagement;
+using GameEngine2D.Rendering;
 
-namespace GameEngine2D.Rendering
+namespace GameEngine2D.Gui
 {
-    class SpriteRenderer : Component, IComponentDrawable
+    public class Button : Widget
     {
         public TextureDX Texture { get; set; }
+        
+        public override void Update()
+        {
+            Console.WriteLine("Button.Update - TODO");
+        }
 
-        public SpriteRenderer(Entity parent) : base(parent) {}
-
-        public void Draw(Matrix worldViewProjMatrix)
+        public override void Draw(Matrix worldProjMatrix)
         {
             // Multiply by scale matrix to scale to texture's dimensions
             // Rectangle renderer renders a 1x1 rectangle by default
-            var scaled = Texture.BaseTextureScale * worldViewProjMatrix;
+            var scaled = Texture.BaseTextureScale * worldProjMatrix;
 
-            if(Texture != null)
+            if (Texture != null)
             {
                 RectangleRendererDX.Instance.Draw(scaled, Texture.TextureObj);
             }

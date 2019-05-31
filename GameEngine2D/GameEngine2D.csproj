@@ -77,6 +77,13 @@
     <Compile Include="EntitySystem\IComponentDrawable.cs" />
     <Compile Include="EntitySystem\IComponentInitializable.cs" />
     <Compile Include="EntitySystem\IComponentUpdatable.cs" />
+    <Compile Include="Gui\Button.cs" />
+    <Compile Include="Gui\Container.cs" />
+    <Compile Include="Gui\EOrigin.cs" />
+    <Compile Include="Gui\ListPanel.cs" />
+    <Compile Include="Gui\Panel.cs" />
+    <Compile Include="Gui\UserInterface.cs" />
+    <Compile Include="Gui\Widget.cs" />
     <Compile Include="Input\AxisInput.cs" />
     <Compile Include="Input\BooleanInput.cs" />
     <Compile Include="Input\Input.cs" />
@@ -84,6 +91,7 @@
     <Compile Include="Input\KeyboardInput.cs" />
     <Compile Include="Math\MathConstants.cs" />
     <Compile Include="Math\Transform.cs" />
+    <Compile Include="Physics\RigidBody.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EngineCore\Game.cs" />
@@ -93,6 +101,9 @@
     <Compile Include="Rendering\VertexXYUV.cs" />
     <Compile Include="Scripting\IScript.cs" />
     <Compile Include="Scripting\Script.cs" />
+    <Compile Include="Tiling\Tilemap.cs" />
+    <Compile Include="Tiling\TilemapRenderer.cs" />
+    <Compile Include="Tiling\Tileset.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

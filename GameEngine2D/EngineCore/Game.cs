@@ -12,6 +12,7 @@ using D3D11 = SharpDX.Direct3D11;
 using GameEngine2D.Rendering;
 using GameEngine2D.AssetManagement;
 using GameEngine2D.Input;
+using GameEngine2D.Gui;
 
 namespace GameEngine2D.EngineCore
 {
@@ -108,6 +109,9 @@ namespace GameEngine2D.EngineCore
 
             // Draw the scene
             scene.Draw(orthoProjMatrix);
+
+            // Draw the gui
+            UserInterface.Instance.Draw(orthoProjMatrix);
 
             // Swap the front and back buffers
             swapChain.Present(1, PresentFlags.None);

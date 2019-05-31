@@ -70,6 +70,8 @@ namespace GameEngine2D.EntitySystem
             // Calculate the world view projection matrix of the entity
             Matrix wvp = Transform.WorldMatrix * viewProjMatrix;
 
+            Console.WriteLine(Name + ": " + Transform.GlobalPosition.X + ", " + Transform.GlobalPosition.Y);
+
             // Draw all child entities
             foreach (Entity e in entities)
             {
@@ -95,7 +97,7 @@ namespace GameEngine2D.EntitySystem
         // Get an immutable list of child entities
         public IList<Entity> GetEntities()
         {
-            return entities;
+            return entities.AsReadOnly();
         }
 
         // Add a premade component to the entity

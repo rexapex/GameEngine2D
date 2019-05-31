@@ -56,7 +56,7 @@ namespace GameEngine2D.AssetManagement
                 BindFlags = D3D11.BindFlags.ShaderResource,
                 Usage = D3D11.ResourceUsage.Immutable,
                 CpuAccessFlags = D3D11.CpuAccessFlags.None,
-                Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
                 MipLevels = 1,
                 OptionFlags = D3D11.ResourceOptionFlags.None,
                 SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0)

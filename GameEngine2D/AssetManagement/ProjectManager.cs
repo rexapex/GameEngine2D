@@ -13,6 +13,7 @@ using GameEngine2D.Math;
 using GameEngine2D.Input;
 using GameEngine2D.Scripting;
 using GameEngine2D.Tiling;
+using GameEngine2D.Gui;
 
 namespace GameEngine2D.AssetManagement
 {
@@ -45,9 +46,16 @@ namespace GameEngine2D.AssetManagement
         // The map from scene name to scene object
         // Only contains scenes which have been explicitly loaded
         public Dictionary<string, Scene> LoadedScenes { get; private set; }
-        
+
         // The name of the default scene, i.e. the first scene to load on game start
         public string DefaultSceneName { get; private set; }
+
+        // The map from gui name to gui path
+        public Dictionary<string, string> Guis { get; private set; }
+
+        // The map from gui name to gui object
+        // Only contains guis which have been loaded
+        public Dictionary<string, UserInterface> LoadedGuis { get; private set; }
 
         // The DLL storing the game scripts
         private Assembly scriptsDll;
@@ -72,11 +80,17 @@ namespace GameEngine2D.AssetManagement
             // Create the map from scene name to scene object
             LoadedScenes = new Dictionary<string, Scene>();
 
+            // Create the map from gui name to gui object
+            LoadedGuis = new Dictionary<string, UserInterface>();
+
             // Load the project info
             LoadProjectInfoFile(projectPath + "/info.xml");
 
             // Load the scene declerations
             LoadSceneDeclerationsFile(projectPath + "/scenes.xml");
+
+            // Load the gui declerations
+            LoadGuiDeclerationsFile(projectPath + "/guis.xml");
 
             // TODO - Load tags
 
@@ -276,7 +290,6 @@ namespace GameEngine2D.AssetManagement
                     if (int.TryParse(rowLengthNode.Value, out rowLength))
                     {
                         t.Tileset.RowLength = rowLength;
-
                     }
                 }
 
@@ -288,7 +301,6 @@ namespace GameEngine2D.AssetManagement
                     if (int.TryParse(colLengthNode.Value, out colLength))
                     {
                         t.Tileset.ColLength = colLength;
-
                     }
                 }
 
@@ -300,7 +312,6 @@ namespace GameEngine2D.AssetManagement
                     if (int.TryParse(numTilesNode.Value, out numTiles))
                     {
                         t.Tileset.NumTiles = numTiles;
-
                     }
                 }
             }
@@ -343,6 +354,127 @@ namespace GameEngine2D.AssetManagement
                         if(child.Attribute("default") != null)
                         {
                             DefaultSceneName = sceneName;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Load a graphical user interface
+        // The gui name must a key in the Guis map
+        public void LoadGui(string guiName)
+        {
+            if (projectPath != null && Guis.ContainsKey(guiName) && !LoadedGuis.ContainsKey(guiName))
+            {
+                string path = projectPath + "/" + Guis[guiName];
+                UserInterface gui = new UserInterface();
+
+                // Load the xml file
+                XElement root = XElement.Load(path);
+
+                // Each child of root should be an entity
+                foreach (XElement child in root.Elements())
+                {
+                    ParseWidget(child, gui.RootComponent);
+                }
+
+                // Add the scene to the loaded scenes map
+                LoadedGuis[guiName] = gui;
+            }
+        }
+
+        // Parse a gui widget
+        private void ParseWidget(XElement node, Container parent)
+        {
+            Widget w = null;
+
+            // Parse the widget specific info
+            switch (node.Name.ToString())
+            {
+                case "button":
+                    Button b = new Button();
+                    ParseButton(node, b);
+                    w = b;
+                    break;
+            }
+
+            if(w != null)
+            {
+                // Parse the generic widget info
+                foreach(XElement child in node.Elements())
+                {
+                    switch (child.Name.ToString())
+                    {
+                        case "transform":
+                            ParseTransform(child, w.Transform);
+                            break;
+                        case "origin":
+                            w.Origin = ParseOrigin(child);
+                            break;
+                    }
+                }
+
+                // Add the widget to the parent container
+                parent.AddChild(w);
+            }
+        }
+
+        // Parse a widget origin
+        private EOrigin ParseOrigin(XElement node)
+        {
+            try
+            {
+                int value = int.Parse(node.Value.ToString());
+                // Check value is within enum's range
+                if(value >= 0 && value <= 8)
+                {
+                    return (EOrigin)value;
+                }
+            }
+            catch(FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            // Default to center
+            return EOrigin.CENTER;
+        }
+    
+        // Parse a gui button
+        private void ParseButton(XElement node, Button b)
+        {
+            // Parse the texture node if there is one
+            var textureNode = node.Element("texture");
+            if (textureNode != null)
+            {
+                // Add the texture to the asset manager
+                b.Texture = AssetManager.Instance.AddTexture(projectPath + "/" + textureNode.Value.ToString());
+            }
+        }
+
+        // Load the guis.xml file
+        // File should be at the project root
+        public void LoadGuiDeclerationsFile(string path)
+        {
+            // Create the map from gui name to gui path
+            Guis = new Dictionary<string, string>();
+
+            // Load the xml file
+            XElement root = XElement.Load(path);
+
+            // Each child of root is a scene decleration
+            foreach (XElement child in root.Elements())
+            {
+                // Ensure the tag is a gui tag and contains the required data
+                if (child.Name == "gui" && child.Attribute("name") != null && child.Attribute("path") != null)
+                {
+                    string guiName = child.Attribute("name").Value.ToString();
+                    string guiPath = child.Attribute("path").Value.ToString();
+                    if (guiName != null && guiPath != null)
+                    {
+                        // Add the scene to the Scenes map if the name is not already taken
+                        if (!Guis.ContainsKey(guiName))
+                        {
+                            Guis[guiName] = guiPath;
                         }
                     }
                 }

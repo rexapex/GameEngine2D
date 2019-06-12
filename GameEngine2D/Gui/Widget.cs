@@ -11,6 +11,7 @@ namespace GameEngine2D.Gui
     // Widget is the type from which all Gui components derive
     public abstract class Widget
     {
+        public string Name { get; set; }
         public EOrigin Origin { get; set; }
         public Transform Transform { get; private set; }
 

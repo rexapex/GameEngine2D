@@ -38,5 +38,14 @@ namespace GameEngine2D.Gui
                 w.Draw(worldProjMatrix);
             }
         }
+
+        // Add a child widget to the container
+        public void AddChild(Widget w)
+        {
+            if(w != null && !childWidgets.Contains(w))
+            {
+                childWidgets.Add(w);
+            }
+        }
     }
 }

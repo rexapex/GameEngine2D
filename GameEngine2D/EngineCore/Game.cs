@@ -16,7 +16,7 @@ using GameEngine2D.Gui;
 
 namespace GameEngine2D.EngineCore
 {
-    class Game : IDisposable
+    public class Game : IDisposable
     {
         private RenderForm renderForm;
         private const int Width = 800;
@@ -31,6 +31,7 @@ namespace GameEngine2D.EngineCore
         private Matrix orthoProjMatrix;
 
         private Scene scene;
+        private UserInterface gui;
 
         private bool running = false;
 
@@ -112,7 +113,10 @@ namespace GameEngine2D.EngineCore
             scene.Draw(orthoProjMatrix);
 
             // Draw the gui
-            UserInterface.Instance.Draw(orthoProjMatrix);
+            if(gui != null)
+            {
+                gui.Draw(orthoProjMatrix);
+            }
 
             // Swap the front and back buffers
             swapChain.Present(1, PresentFlags.None);
@@ -136,6 +140,26 @@ namespace GameEngine2D.EngineCore
                     scene = ProjectManager.Instance.LoadedScenes[sceneName];
                 }
                 scene.OnSceneSwitch();
+            }
+        }
+
+        // Switch the current gui to the gui specified
+        // If the gui is not loaded, will block until loaded
+        public void SwitchGui(string guiName)
+        {
+            if(guiName != null)
+            {
+                if(ProjectManager.Instance.LoadedGuis.ContainsKey(guiName))
+                {
+                    // Gui is already loaded so switch to it
+                    gui = ProjectManager.Instance.LoadedGuis[guiName];
+                }
+                else if (ProjectManager.Instance.Guis.ContainsKey(guiName))
+                {
+                    // Gui not loaded but does exist, therefore, load gui then switch
+                    ProjectManager.Instance.LoadGui(guiName);
+                    gui = ProjectManager.Instance.LoadedGuis[guiName];
+                }
             }
         }
 

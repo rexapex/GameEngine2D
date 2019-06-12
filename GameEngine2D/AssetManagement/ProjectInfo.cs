@@ -22,5 +22,13 @@ namespace GameEngine2D.AssetManagement
             DateCreated = dateCreated;
             DateModified = dateModified;
         }
+
+        public override string ToString()
+        {
+            return "Project: " + Name + Environment.NewLine +
+                "Engine Version: " + EngineVersion + Environment.NewLine +
+                "Game Version: " + GameVersion + Environment.NewLine +
+                "Date Created: " + DateCreated + Environment.NewLine;
+        }
     }
 }

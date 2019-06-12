@@ -259,12 +259,49 @@ namespace GameEngine2D.AssetManagement
             {
                 // Create the tileset object
                 t.Tileset = new Tileset();
+
                 // Parse the texture node if there is one
                 var textureNode = tilesetNode.Element("texture");
                 if (textureNode != null)
                 {
                     // Add the texture to the asset manager
                     t.Tileset.Texture = AssetManager.Instance.AddTexture(projectPath + "/" + textureNode.Value.ToString());
+                }
+
+                // Parse the row length node if there is one
+                var rowLengthNode = tilesetNode.Element("row-length");
+                if (rowLengthNode != null)
+                {
+                    int rowLength;
+                    if (int.TryParse(rowLengthNode.Value, out rowLength))
+                    {
+                        t.Tileset.RowLength = rowLength;
+
+                    }
+                }
+
+                // Parse the col length node if there is one
+                var colLengthNode = tilesetNode.Element("col-length");
+                if (colLengthNode != null)
+                {
+                    int colLength;
+                    if (int.TryParse(colLengthNode.Value, out colLength))
+                    {
+                        t.Tileset.ColLength = colLength;
+
+                    }
+                }
+
+                // Parse the num tiles node if there is one
+                var numTilesNode = tilesetNode.Element("num-tiles");
+                if (numTilesNode != null)
+                {
+                    int numTiles;
+                    if (int.TryParse(numTilesNode.Value, out numTiles))
+                    {
+                        t.Tileset.NumTiles = numTiles;
+
+                    }
                 }
             }
 
@@ -340,10 +377,10 @@ namespace GameEngine2D.AssetManagement
                     case "game-version":
                         gameVersion = child.Value;
                         break;
-                    case "dateCreated":
+                    case "date-created":
                         dateCreated = child.Value;
                         break;
-                    case "dateModified":
+                    case "date-modified":
                         dateModified = child.Value;
                         break;
                 }

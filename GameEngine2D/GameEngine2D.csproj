@@ -96,6 +96,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EngineCore\Game.cs" />
     <Compile Include="Rendering\AnimatedSpriteRenderer.cs" />
+    <Compile Include="Rendering\RectangleGridRendererDX.cs" />
     <Compile Include="Rendering\RectangleRendererDX.cs" />
     <Compile Include="Rendering\SpriteRenderer.cs" />
     <Compile Include="Rendering\VertexXYUV.cs" />

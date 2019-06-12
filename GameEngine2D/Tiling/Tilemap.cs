@@ -12,6 +12,10 @@ namespace GameEngine2D.Tiling
     {
         // 2D grid array indexed as [x, y]
         public int[,] TileGrid { get; private set; }
+        
+        // Dimensions of the array
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
         public Tilemap(string fileContents)
         {
@@ -35,7 +39,7 @@ namespace GameEngine2D.Tiling
                     // Convert the string into an int and fill grid cell
                     try
                     {
-                        TileGrid[x, y] = Int32.Parse(lines[y].Split(' ')[x]);
+                        TileGrid[x, height-y-1] = Int32.Parse(lines[y].Split(' ')[x]);
                     }
                     catch(FormatException e)
                     {
@@ -44,6 +48,10 @@ namespace GameEngine2D.Tiling
                     }
                 }
             }
+
+            // Set the dimensions
+            Width = width;
+            Height = height;
         }
     }
 }

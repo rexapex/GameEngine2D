@@ -82,6 +82,7 @@ namespace GameEngine2D.EngineCore
             // Initialize everything which requires reference to the d3d device
             AssetManager.Instance.Initialize(d3dDevice);
             RectangleRendererDX.Instance.Initialize(d3dDevice, d3dDeviceContext);
+            RectangleGridRendererDX.Initialize(d3dDevice, d3dDeviceContext);
         }
 
         public void Start()

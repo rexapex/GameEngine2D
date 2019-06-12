@@ -19,8 +19,8 @@ namespace GameEngine2D.EngineCore
     public class Game : IDisposable
     {
         private RenderForm renderForm;
-        private const int Width = 800;
-        private const int Height = 600;
+        private int Width = 800;
+        private int Height = 600;
 
         private D3D11.Device d3dDevice;
         private D3D11.DeviceContext d3dDeviceContext;
@@ -42,7 +42,8 @@ namespace GameEngine2D.EngineCore
             // Create a window
             renderForm = new RenderForm("2D Game Engine");
             renderForm.ClientSize = new Size(Width, Height);
-            renderForm.AllowUserResizing = false;
+            renderForm.AllowUserResizing = true;
+            renderForm.Resize += OnRenderFormResize;
             
             // Initialize Direct3D
             InitializeDeviceResources();
@@ -161,6 +162,40 @@ namespace GameEngine2D.EngineCore
                     gui = ProjectManager.Instance.LoadedGuis[guiName];
                 }
             }
+        }
+
+        // Called when render form is resized by the user
+        // Based on: https://stackoverflow.com/questions/18658508/sharpdx-windowresize
+        private void OnRenderFormResize(object sender, EventArgs args)
+        {
+            // Unbind everything
+            d3dDevice.ImmediateContext.ClearState();
+
+            // Dispose of the old render target view
+            if(renderTargetView != null)
+            {
+                renderTargetView.Dispose();
+            }
+
+            // Set the new width and height
+            Width = renderForm.ClientSize.Width;
+            Height = renderForm.ClientSize.Height;
+
+            // Resize the swap chain
+            swapChain.ResizeBuffers(1, Width, Height, Format.R8G8B8A8_UNorm, SwapChainFlags.AllowModeSwitch);
+
+            // Set the back buffer as the render target view
+            using (D3D11.Texture2D backBuffer = swapChain.GetBackBuffer<D3D11.Texture2D>(0))
+            {
+                renderTargetView = new D3D11.RenderTargetView(d3dDevice, backBuffer);
+            }
+
+            // Create the viewport
+            viewport = new Viewport(0, 0, Width, Height);
+            d3dDeviceContext.Rasterizer.SetViewport(viewport);
+
+            // Create the orthographic projection matrix
+            orthoProjMatrix = Matrix.OrthoOffCenterLH(0, Width, 0, Height, 0.0f, 100.0f);
         }
 
         public void Dispose()

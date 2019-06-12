@@ -378,6 +378,9 @@ namespace GameEngine2D.AssetManagement
                     ParseWidget(child, gui.RootComponent);
                 }
 
+                // Refresh the transforms of the widgets
+                gui.OnRenderFormResize();
+
                 // Add the scene to the loaded scenes map
                 LoadedGuis[guiName] = gui;
             }
@@ -392,7 +395,7 @@ namespace GameEngine2D.AssetManagement
             switch (node.Name.ToString())
             {
                 case "button":
-                    Button b = new Button();
+                    Button b = new Button(parent);
                     ParseButton(node, b);
                     w = b;
                     break;

@@ -16,7 +16,7 @@ namespace GameEngine2D.Gui
         public Overflow OverflowX { get; set; }
         public Overflow OverflowY { get; set; }
 
-        public Panel() : base()
+        public Panel(Widget parent) : base(parent)
         {
             OverflowX = Overflow.AUTO;
             OverflowY = Overflow.AUTO;

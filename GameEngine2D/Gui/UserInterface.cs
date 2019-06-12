@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX;
+using GameEngine2D.EngineCore;
 
 namespace GameEngine2D.Gui
 {
@@ -14,7 +15,7 @@ namespace GameEngine2D.Gui
 
         public UserInterface()
         {
-            RootComponent = new Container();
+            RootComponent = new Container(null);
         }
 
         // Update the user interface
@@ -27,6 +28,14 @@ namespace GameEngine2D.Gui
         public void Draw(Matrix projMatrix)
         {
             RootComponent.Draw(projMatrix);
+        }
+
+        // Called when the render form is resized
+        public void OnRenderFormResize()
+        {
+            RootComponent.Width = Context.Instance.Game.Width;
+            RootComponent.Height = Context.Instance.Game.Height;
+            RootComponent.OnParentResize();
         }
     }
 }

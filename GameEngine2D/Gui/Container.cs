@@ -12,7 +12,7 @@ namespace GameEngine2D.Gui
         // List of all direct subcomponents
         private List<Widget> childWidgets;
 
-        public Container() : base()
+        public Container(Widget parent) : base(parent)
         {
             Origin = EOrigin.BOTTOM_LEFT;
             Transform.SetTranslation(0, 0);
@@ -45,6 +45,22 @@ namespace GameEngine2D.Gui
             if(w != null && !childWidgets.Contains(w))
             {
                 childWidgets.Add(w);
+            }
+        }
+
+        // Called when the parent widget is resized
+        public override void OnParentResize()
+        {
+            if(parent != null)
+            {
+                // TODO
+            }
+
+            // Notify child widgets
+            // TODO - iff this container is reszied
+            foreach (Widget w in childWidgets)
+            {
+                w.OnParentResize();
             }
         }
     }

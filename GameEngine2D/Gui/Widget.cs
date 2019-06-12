@@ -14,15 +14,21 @@ namespace GameEngine2D.Gui
         public string Name { get; set; }
         public EOrigin Origin { get; set; }
         public Transform Transform { get; private set; }
+
         public int Width { get; set; }
         public int Height { get; set; }
+        protected Transform OriginTransform;
 
-        public Widget()
+        protected Widget parent;
+
+        public Widget(Widget parent)
         {
+            this.parent = parent;
             Width = 32;
             Height = 32;
             Origin = EOrigin.CENTER;
             Transform = new Transform();
+            OriginTransform = new Transform();
         }
 
         // Update the widget and determine whether input triggers events
@@ -30,5 +36,8 @@ namespace GameEngine2D.Gui
 
         // Draw the widget to the screen
         abstract public void Draw(Matrix worldProjMatrix);
+
+        // Called when the parent widget is resized
+        virtual public void OnParentResize() { }
     }
 }

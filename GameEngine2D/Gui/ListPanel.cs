@@ -13,5 +13,10 @@ namespace GameEngine2D.Gui
 
         // Panel consists of a list of subcomponents, arranged either vertically or horizontally
         public Direction FlowDirection { get; set; }
+
+        public ListPanel(Widget parent) : base(parent)
+        {
+
+        }
     }
 }

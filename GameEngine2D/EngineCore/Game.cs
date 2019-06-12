@@ -19,8 +19,8 @@ namespace GameEngine2D.EngineCore
     public class Game : IDisposable
     {
         private RenderForm renderForm;
-        private int Width = 800;
-        private int Height = 600;
+        public int Width { get; private set; } = 800;
+        public int Height { get; private set; } = 600;
 
         private D3D11.Device d3dDevice;
         private D3D11.DeviceContext d3dDeviceContext;
@@ -100,6 +100,7 @@ namespace GameEngine2D.EngineCore
         private void Update()
         {
             InputManager.Instance.Update();
+            gui.Update();
             scene.Update();
             Draw();
         }
@@ -154,12 +155,14 @@ namespace GameEngine2D.EngineCore
                 {
                     // Gui is already loaded so switch to it
                     gui = ProjectManager.Instance.LoadedGuis[guiName];
+                    gui.OnRenderFormResize();
                 }
                 else if (ProjectManager.Instance.Guis.ContainsKey(guiName))
                 {
                     // Gui not loaded but does exist, therefore, load gui then switch
                     ProjectManager.Instance.LoadGui(guiName);
                     gui = ProjectManager.Instance.LoadedGuis[guiName];
+                    gui.OnRenderFormResize();
                 }
             }
         }
@@ -196,6 +199,12 @@ namespace GameEngine2D.EngineCore
 
             // Create the orthographic projection matrix
             orthoProjMatrix = Matrix.OrthoOffCenterLH(0, Width, 0, Height, 0.0f, 100.0f);
+
+            // Notify the gui if there is one
+            if(gui != null)
+            {
+                gui.OnRenderFormResize();
+            }
         }
 
         public void Dispose()

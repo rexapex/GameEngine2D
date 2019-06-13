@@ -30,7 +30,7 @@ namespace GameEngine2D.EngineCore
 
         private Matrix orthoProjMatrix;
 
-        private Scene scene;
+        public Scene Scene { get; private set; }
         private UserInterface gui;
 
         private bool running = false;
@@ -90,7 +90,7 @@ namespace GameEngine2D.EngineCore
         public void Start()
         {
             // Can't start if the game is already running or if there is no scene
-            if (!running && scene != null)
+            if (!running && Scene != null)
             {
                 running = true;
                 RenderLoop.Run(renderForm, Update);
@@ -101,7 +101,7 @@ namespace GameEngine2D.EngineCore
         {
             InputManager.Instance.Update();
             gui.Update();
-            scene.Update();
+            Scene.Update();
             Draw();
         }
 
@@ -112,7 +112,7 @@ namespace GameEngine2D.EngineCore
             d3dDeviceContext.ClearRenderTargetView(renderTargetView, new SharpDX.Color(127, 178, 229));
 
             // Draw the scene
-            scene.Draw(orthoProjMatrix);
+            Scene.Draw(orthoProjMatrix);
 
             // Draw the gui
             if(gui != null)
@@ -133,15 +133,15 @@ namespace GameEngine2D.EngineCore
                 if(ProjectManager.Instance.LoadedScenes.ContainsKey(sceneName))
                 {
                     // Scene is already loaded so switch to it
-                    scene = ProjectManager.Instance.LoadedScenes[sceneName];
+                    Scene = ProjectManager.Instance.LoadedScenes[sceneName];
                 }
                 else if(ProjectManager.Instance.Scenes.ContainsKey(sceneName))
                 {
                     // Scene not loaded but does exist, therefore, load scene then switch
                     ProjectManager.Instance.LoadScene(sceneName);
-                    scene = ProjectManager.Instance.LoadedScenes[sceneName];
+                    Scene = ProjectManager.Instance.LoadedScenes[sceneName];
                 }
-                scene.OnSceneSwitch();
+                Scene.OnSceneSwitch();
             }
         }
 

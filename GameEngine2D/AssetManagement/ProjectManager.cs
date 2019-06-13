@@ -14,6 +14,7 @@ using GameEngine2D.Input;
 using GameEngine2D.Scripting;
 using GameEngine2D.Tiling;
 using GameEngine2D.Gui;
+using GameEngine2D.Camera;
 
 namespace GameEngine2D.AssetManagement
 {
@@ -166,6 +167,11 @@ namespace GameEngine2D.AssetManagement
                             TilemapRenderer t = new TilemapRenderer(e);
                             ParseTilemapRenderer(child, t);
                             e.AddComponent(t);
+                            break;
+                        case "follow-camera":
+                            FollowCamera f = new FollowCamera(e);
+                            ParseFollowCamera(child, f);
+                            e.AddComponent(f);
                             break;
                     }
                 }
@@ -344,6 +350,18 @@ namespace GameEngine2D.AssetManagement
                 // Load the tilemap
                 t.Tilemap = new Tilemap(AssetManager.Instance.AddTextFile(projectPath + "/" + tilemapNode.Value.ToString()));
             }
+        }
+
+        // Parse the xml node of a follow camera component
+        private void ParseFollowCamera(XElement componentNode, FollowCamera c)
+        {
+            // Parse the component name if there is one
+            if (componentNode.Attribute("name") != null)
+            {
+                c.Name = componentNode.Attribute("name").Value.ToString();
+            }
+
+            // TODO - Offset node
         }
 
         // Load the scenes.xml file

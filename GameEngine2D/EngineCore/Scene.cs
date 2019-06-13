@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX;
 using GameEngine2D.EntitySystem;
 using GameEngine2D.Rendering;
-using SharpDX;
+using GameEngine2D.Camera;
 
 namespace GameEngine2D.EngineCore
 {
-    class Scene
+    public class Scene
     {
         // List of child entities
         private List<Entity> entities;
+
+        // Scene is transformed relative to the main camera
+        public Camera.Camera MainCamera { get; set; }
 
         public Scene()
         {
@@ -40,12 +44,16 @@ namespace GameEngine2D.EngineCore
         // Draw the scene and all the entities in it
         public void Draw(Matrix projMatrix)
         {
-            // TODO - Probably store main camera ref in Scene
-            // TODO - Calculate viewProjMatrix and send to entities
+            Matrix viewProjMatrix = projMatrix;
+
+            if(MainCamera != null)
+            {
+                viewProjMatrix = MainCamera.Transform.WorldMatrix * viewProjMatrix;
+            }
 
             foreach (Entity e in entities)
             {
-                e.Draw(projMatrix);
+                e.Draw(viewProjMatrix);
             }
         }
 

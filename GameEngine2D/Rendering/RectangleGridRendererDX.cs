@@ -41,6 +41,9 @@ namespace GameEngine2D.Rendering
             // Width and height of each tile in the tileset
             int tileWidth = tileset.Texture.Width / tileset.RowLength;
             int tileHeight = tileset.Texture.Height / tileset.ColLength;
+            // Calculate the distance from the edge of a pixel to the centre of the pixel as a ratio of the dimensions of the texture
+            float halfPixelWidth = (1 / tileset.Texture.Width) / 2;
+            float halfPixelHeight = (1 / tileset.Texture.Height) / 2;
             // Vertices of the rectangle
             // Rectangle drawn as two triangles
             VertexXYUV[] vertices = new VertexXYUV[6 * gridWidth * gridHeight];
@@ -61,10 +64,10 @@ namespace GameEngine2D.Rendering
                         float v0 = (float)atlasY / tileset.ColLength;
                         float v1 = (float)(atlasY + 1) / tileset.ColLength;
                         // Calculate the position co-ordinates for the tile
-                        int x0 = i * tileWidth;
-                        int x1 = (i + 1) * tileWidth;
-                        int y0 = j * tileHeight;
-                        int y1 = (j + 1) * tileHeight;
+                        float x0 = i * tileWidth + halfPixelWidth;
+                        float x1 = (i + 1) * tileWidth - halfPixelWidth;
+                        float y0 = j * tileHeight + halfPixelHeight;
+                        float y1 = (j + 1) * tileHeight - halfPixelHeight;
                         // Set the vertex's position and texture co-ordinates
                         vertices[6*(i + gridWidth * j) + 0] = new VertexXYUV(new Vector2(x0, y1), new Vector2(u0, v0));
                         vertices[6*(i + gridWidth * j) + 1] = new VertexXYUV(new Vector2(x1, y1), new Vector2(u1, v0));
@@ -76,7 +79,7 @@ namespace GameEngine2D.Rendering
                 }
             }
             numVertices = vertices.Count();
-
+            
             // Create a vertex buffer
             vertexBuffer = D3D11.Buffer.Create(d3dDevice, D3D11.BindFlags.VertexBuffer, vertices);
 
@@ -109,7 +112,7 @@ namespace GameEngine2D.Rendering
                     AddressU = D3D11.TextureAddressMode.Wrap,
                     AddressV = D3D11.TextureAddressMode.Wrap,
                     AddressW = D3D11.TextureAddressMode.Wrap,
-                    Filter = D3D11.Filter.MinMagMipLinear
+                    Filter = D3D11.Filter.MinMagPointMipLinear
                 });
 
             // Create the world view projection buffer

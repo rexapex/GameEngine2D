@@ -25,6 +25,8 @@ namespace GameEngine2D.EngineCore
         private D3D11.Device d3dDevice;
         private D3D11.DeviceContext d3dDeviceContext;
         private D3D11.RenderTargetView renderTargetView;
+        private D3D11.BlendState blendState;
+        private D3D11.BlendStateDescription blendStateDesc;
         private SwapChain swapChain;
         private Viewport viewport;
 
@@ -68,18 +70,17 @@ namespace GameEngine2D.EngineCore
             D3D11.Device.CreateWithSwapChain(DriverType.Hardware, D3D11.DeviceCreationFlags.None, swapChainDesc, out d3dDevice, out swapChain);
             d3dDeviceContext = d3dDevice.ImmediateContext;
 
-            // Set the back buffer as the render target view
-            using (D3D11.Texture2D backBuffer = swapChain.GetBackBuffer<D3D11.Texture2D>(0))
-            {
-                renderTargetView = new D3D11.RenderTargetView(d3dDevice, backBuffer);
-            }
+            // Initialize the back buffer
+            InitializeBackBuffer();
 
-            // Create the viewport
-            viewport = new Viewport(0, 0, Width, Height);
-            d3dDeviceContext.Rasterizer.SetViewport(viewport);
+            // Setup the viewport with the new width and height settings
+            InitializeViewport();
+
+            // Enable alpha blending
+            EnableAlphaBlending();
 
             // Create the orthographic projection matrix
-            orthoProjMatrix = Matrix.OrthoOffCenterLH(0, Width, 0, Height, 0.0f, 100.0f);
+            InitializeProjectionMatrix();
 
             // Initialize everything which requires reference to the d3d device
             AssetManager.Instance.Initialize(d3dDevice);
@@ -187,24 +188,71 @@ namespace GameEngine2D.EngineCore
             // Resize the swap chain
             swapChain.ResizeBuffers(1, Width, Height, Format.R8G8B8A8_UNorm, SwapChainFlags.AllowModeSwitch);
 
-            // Set the back buffer as the render target view
-            using (D3D11.Texture2D backBuffer = swapChain.GetBackBuffer<D3D11.Texture2D>(0))
-            {
-                renderTargetView = new D3D11.RenderTargetView(d3dDevice, backBuffer);
-            }
+            // Initialize the back buffer
+            InitializeBackBuffer();
 
-            // Create the viewport
-            viewport = new Viewport(0, 0, Width, Height);
-            d3dDeviceContext.Rasterizer.SetViewport(viewport);
+            // Setup the viewport with the new width and height settings
+            InitializeViewport();
+
+            // Enable alpha blending
+            EnableAlphaBlending();
 
             // Create the orthographic projection matrix
-            orthoProjMatrix = Matrix.OrthoOffCenterLH(0, Width, 0, Height, 0.0f, 100.0f);
+            InitializeProjectionMatrix();
 
             // Notify the gui if there is one
             if(gui != null)
             {
                 gui.OnRenderFormResize();
             }
+        }
+
+        private void InitializeBackBuffer()
+        {
+            // Set the back buffer as the render target view
+            using (D3D11.Texture2D backBuffer = swapChain.GetBackBuffer<D3D11.Texture2D>(0))
+            {
+                if(renderTargetView != null)
+                {
+                    renderTargetView.Dispose();
+                }
+                renderTargetView = new D3D11.RenderTargetView(d3dDevice, backBuffer);
+            }
+        }
+
+        private void InitializeViewport()
+        {
+            // Create the viewport
+            viewport = new Viewport(0, 0, Width, Height);
+            d3dDeviceContext.Rasterizer.SetViewport(viewport);
+        }
+
+        private void InitializeProjectionMatrix()
+        {
+            // Create the orthographic projection matrix
+            orthoProjMatrix = Matrix.OrthoOffCenterLH(0, Width, 0, Height, 0.0f, 100.0f);
+        }
+
+        private void EnableAlphaBlending()
+        {
+            if(blendState != null)
+            {
+                blendState.Dispose();
+            }
+
+            // Enable alpha blending
+            // Based on: https://stackoverflow.com/questions/24899337/sharpdx-dx11-alpha-blend
+            blendStateDesc = new D3D11.BlendStateDescription();
+            blendStateDesc.RenderTarget[0].IsBlendEnabled = true;
+            blendStateDesc.RenderTarget[0].SourceBlend = D3D11.BlendOption.SourceAlpha;
+            blendStateDesc.RenderTarget[0].DestinationBlend = D3D11.BlendOption.InverseSourceAlpha;
+            blendStateDesc.RenderTarget[0].BlendOperation = D3D11.BlendOperation.Add;
+            blendStateDesc.RenderTarget[0].SourceAlphaBlend = D3D11.BlendOption.One;
+            blendStateDesc.RenderTarget[0].DestinationAlphaBlend = D3D11.BlendOption.Zero;
+            blendStateDesc.RenderTarget[0].AlphaBlendOperation = D3D11.BlendOperation.Add;
+            blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11.ColorWriteMaskFlags.All;
+            blendState = new D3D11.BlendState(d3dDevice, blendStateDesc);
+            d3dDeviceContext.OutputMerger.SetBlendState(blendState);
         }
 
         public void Dispose()
@@ -214,6 +262,7 @@ namespace GameEngine2D.EngineCore
             d3dDevice.Dispose();
             d3dDeviceContext.Dispose();
             renderTargetView.Dispose();
+            blendState.Dispose();
         }
     }
 }

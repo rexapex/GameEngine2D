@@ -20,21 +20,27 @@ namespace GameEngine2D.Gui
         
         public override void Update()
         {
-
+            if(Visible && Enabled)
+            {
+                // TODO
+            }
         }
 
         public override void Draw(Matrix worldProjMatrix)
         {
-            // Transform the matrix by the widget's transform
-            Matrix wvp = Transform.WorldMatrix * OriginTransform.WorldMatrix * worldProjMatrix;
-
-            // Multiply by scale matrix to scale to texture's dimensions
-            // Rectangle renderer renders a 1x1 rectangle by default
-            var scaled = Texture.BaseTextureScale * wvp;
-
-            if (Texture != null)
+            if (Visible)
             {
-                RectangleRendererDX.Instance.Draw(scaled, Texture.TextureObj);
+                // Transform the matrix by the widget's transform
+                Matrix wvp = Transform.WorldMatrix * OriginTransform.WorldMatrix * worldProjMatrix;
+
+                // Multiply by scale matrix to scale to texture's dimensions
+                // Rectangle renderer renders a 1x1 rectangle by default
+                var scaled = Texture.BaseTextureScale * wvp;
+
+                if (Texture != null)
+                {
+                    RectangleRendererDX.Instance.Draw(scaled, Texture.TextureObj);
+                }
             }
         }
 
@@ -48,6 +54,10 @@ namespace GameEngine2D.Gui
         {
             int originX = 0;
             int originY = 0;
+
+            // Set the width and height equal to the texture's width and height
+            Width = Texture.Width;
+            Height = Texture.Height;
             
             // Calculate the offset wrt. the origin
             // TODO - Re-evaluate this code once nested containers are in use (global transform maybe should be used instead)

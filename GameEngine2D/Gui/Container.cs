@@ -24,18 +24,24 @@ namespace GameEngine2D.Gui
         // Update the child widgets and determine whether input triggers events
         override public void Update()
         {
-            foreach(Widget w in childWidgets)
+            if (Visible && Enabled)
             {
-                w.Update();
+                foreach (Widget w in childWidgets)
+                {
+                    w.Update();
+                }
             }
         }
 
         // Draw the child widgets to the screen
         override public void Draw(Matrix worldProjMatrix)
         {
-            foreach(Widget w in childWidgets)
+            if (Visible)
             {
-                w.Draw(worldProjMatrix);
+                foreach (Widget w in childWidgets)
+                {
+                    w.Draw(worldProjMatrix);
+                }
             }
         }
 

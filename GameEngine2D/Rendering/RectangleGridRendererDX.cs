@@ -53,8 +53,8 @@ namespace GameEngine2D.Rendering
                     if (value >= 0 && value < tileset.NumTiles)
                     {
                         // Calculate the position of the tile in the texture atlas
-                        int atlasX = value % tilemap.Width;
-                        int atlasY = value / tilemap.Height;
+                        int atlasX = value % tileset.RowLength;
+                        int atlasY = value / tileset.ColLength;
                         // Calculate the texture co-ordinates for the tile
                         float u0 = (float)atlasX / tileset.RowLength;
                         float u1 = (float)(atlasX + 1) / tileset.RowLength;

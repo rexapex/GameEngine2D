@@ -181,26 +181,47 @@ namespace GameEngine2D.AssetManagement
             var sxNode = transformNode.Element("sx");
             var syNode = transformNode.Element("sy");
 
-            // All nodes are required for a valid transform
-            if(xNode != null && yNode != null && rNode != null && sxNode != null && syNode != null)
+            // Parse the position if at least one of x and y exist
+            if(xNode != null || yNode != null)
             {
                 try
                 {
-                    // Convert the strings into floats
-                    float x = float.Parse(xNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
-                    float y = float.Parse(yNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
-                    float r = float.Parse(rNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
-                    float sx = float.Parse(sxNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
-                    float sy = float.Parse(syNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
-
-                    // Set the data of the transform
+                    float x = xNode != null ? float.Parse(xNode.Value, CultureInfo.InvariantCulture.NumberFormat) : 0;
+                    float y = yNode != null ? float.Parse(yNode.Value, CultureInfo.InvariantCulture.NumberFormat) : 0;
                     t.SetTranslation(x, y);
+                }
+                catch(FormatException e)
+                {
+                    Console.WriteLine(e.Message + " when parsing x and/or y nodes in transform");
+                }
+            }
+
+            // Parse the rotation
+            if(rNode != null)
+            {
+                try
+                {
+                    float r = float.Parse(rNode.Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
                     t.SetRotation(r);
+                }
+                catch(FormatException e)
+                {
+                    Console.WriteLine(e.Message + " when parsing r node in transform");
+                }
+            }
+
+            // Parse the scale if at least one of sx and sy exist
+            if(sxNode != null || syNode != null)
+            {
+                try
+                {
+                    float sx = sxNode != null ? float.Parse(sxNode.Value, CultureInfo.InvariantCulture.NumberFormat) : 0;
+                    float sy = syNode != null ? float.Parse(syNode.Value, CultureInfo.InvariantCulture.NumberFormat) : 0;
                     t.SetScale(sx, sy);
                 }
-                catch(Exception e)
+                catch (FormatException e)
                 {
-                    Console.WriteLine(e.Source + ", " + e.Data);
+                    Console.WriteLine(e.Message + " when parsing sx and/or sy nodes in transform");
                 }
             }
         }

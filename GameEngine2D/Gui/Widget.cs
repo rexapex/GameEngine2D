@@ -19,6 +19,9 @@ namespace GameEngine2D.Gui
         public int Height { get; set; }
         protected Transform OriginTransform;
 
+        public bool Visible { get; set; } = true;
+        public bool Enabled { get; set; } = true;
+
         protected Widget parent;
 
         public Widget(Widget parent)

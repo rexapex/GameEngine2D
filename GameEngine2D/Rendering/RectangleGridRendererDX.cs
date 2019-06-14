@@ -51,7 +51,7 @@ namespace GameEngine2D.Rendering
             // Rectangle drawn as two triangles
             VertexXYUV[] vertices = new VertexXYUV[6 * gridWidth * gridHeight];
             // Loop over rows backwards (top to bottom) s.t. tiles lower down the screen are rendered last
-            for (int j = gridHeight - 1; j >= 0; j--)
+            for (int j = 0; j < gridHeight; j++)
             {
                 // Loop over columns from left to right
                 for (int i = 0; i < gridWidth; i++)
@@ -74,12 +74,12 @@ namespace GameEngine2D.Rendering
                         float v0 = (float)atlasY / tileset.ColLength;
                         float v1 = (float)(atlasY + 1) / tileset.ColLength;
                         // Set the vertex's position and texture co-ordinates
-                        vertices[6*(i + gridWidth * j) + 0] = new VertexXYUV(new Vector2(x0, y1), new Vector2(u0, v0));
-                        vertices[6*(i + gridWidth * j) + 1] = new VertexXYUV(new Vector2(x1, y1), new Vector2(u1, v0));
-                        vertices[6*(i + gridWidth * j) + 2] = new VertexXYUV(new Vector2(x1, y0), new Vector2(u1, v1));
-                        vertices[6*(i + gridWidth * j) + 3] = new VertexXYUV(new Vector2(x1, y0), new Vector2(u1, v1));
-                        vertices[6*(i + gridWidth * j) + 4] = new VertexXYUV(new Vector2(x0, y0), new Vector2(u0, v1));
-                        vertices[6*(i + gridWidth * j) + 5] = new VertexXYUV(new Vector2(x0, y1), new Vector2(u0, v0));
+                        vertices[6*(i + gridWidth * (gridHeight - j - 1)) + 0] = new VertexXYUV(new Vector2(x0, y1), new Vector2(u0, v0));
+                        vertices[6*(i + gridWidth * (gridHeight - j - 1)) + 1] = new VertexXYUV(new Vector2(x1, y1), new Vector2(u1, v0));
+                        vertices[6*(i + gridWidth * (gridHeight - j - 1)) + 2] = new VertexXYUV(new Vector2(x1, y0), new Vector2(u1, v1));
+                        vertices[6*(i + gridWidth * (gridHeight - j - 1)) + 3] = new VertexXYUV(new Vector2(x1, y0), new Vector2(u1, v1));
+                        vertices[6*(i + gridWidth * (gridHeight - j - 1)) + 4] = new VertexXYUV(new Vector2(x0, y0), new Vector2(u0, v1));
+                        vertices[6*(i + gridWidth * (gridHeight - j - 1)) + 5] = new VertexXYUV(new Vector2(x0, y1), new Vector2(u0, v0));
                     }
                 }
             }

@@ -10,13 +10,11 @@ struct VSOut
 struct PSOut
 {
 	float4 color: SV_TARGET;
-	float depth : SV_DEPTH;
 };
 
 PSOut main(VSOut input)
 {
 	PSOut output;
 	output.color = ShaderTexture.Sample(Sampler, input.textureUV);
-	output.depth = input.position.y;
 	return output;
 }

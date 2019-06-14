@@ -7,7 +7,16 @@ struct VSOut
 	float2 textureUV : TEXCOORD0;
 };
 
-float4 main(VSOut input) : SV_TARGET
+struct PSOut
 {
-	return ShaderTexture.Sample(Sampler, input.textureUV);
+	float4 color: SV_TARGET;
+	float depth : SV_DEPTH;
+};
+
+PSOut main(VSOut input)
+{
+	PSOut output;
+	output.color = ShaderTexture.Sample(Sampler, input.textureUV);
+	output.depth = input.position.y;
+	return output;
 }

@@ -25,10 +25,16 @@ namespace GameEngine2D.EngineCore
         private D3D11.Device d3dDevice;
         private D3D11.DeviceContext d3dDeviceContext;
         private D3D11.RenderTargetView renderTargetView;
-        private D3D11.BlendState blendState;
-        private D3D11.BlendStateDescription blendStateDesc;
         private SwapChain swapChain;
         private Viewport viewport;
+
+        private D3D11.BlendState blendState;
+        private D3D11.BlendStateDescription blendStateDesc;
+
+        private D3D11.DepthStencilView depthStencilView;
+        private D3D11.DepthStencilState depthStencilState;
+        private D3D11.Texture2DDescription depthTextureDesc;
+        private D3D11.DepthStencilStateDescription depthStencilStateDesc;
 
         private Matrix orthoProjMatrix;
 
@@ -79,6 +85,9 @@ namespace GameEngine2D.EngineCore
             // Enable alpha blending
             EnableAlphaBlending();
 
+            // Enable depth test
+            EnableDepthTest();
+
             // Create the orthographic projection matrix
             InitializeProjectionMatrix();
 
@@ -111,6 +120,7 @@ namespace GameEngine2D.EngineCore
             // Clear the screen
             d3dDeviceContext.OutputMerger.SetRenderTargets(renderTargetView);
             d3dDeviceContext.ClearRenderTargetView(renderTargetView, new SharpDX.Color(127, 178, 229));
+            d3dDeviceContext.ClearDepthStencilView(depthStencilView, D3D11.DepthStencilClearFlags.Depth, 0, 0);
 
             // Draw the scene
             Scene.Draw(orthoProjMatrix);
@@ -197,6 +207,9 @@ namespace GameEngine2D.EngineCore
             // Enable alpha blending
             EnableAlphaBlending();
 
+            // Enable depth test
+            EnableDepthTest();
+
             // Create the orthographic projection matrix
             InitializeProjectionMatrix();
 
@@ -224,6 +237,8 @@ namespace GameEngine2D.EngineCore
         {
             // Create the viewport
             viewport = new Viewport(0, 0, Width, Height);
+            viewport.MinDepth = 0;
+            viewport.MaxDepth = 1;
             d3dDeviceContext.Rasterizer.SetViewport(viewport);
         }
 
@@ -255,6 +270,57 @@ namespace GameEngine2D.EngineCore
             d3dDeviceContext.OutputMerger.SetBlendState(blendState);
         }
 
+
+        // https://gamedev.stackexchange.com/questions/75461/how-do-i-set-up-a-depth-buffer-in-sharpdx
+        // https://docs.microsoft.com/en-us/windows/desktop/direct3d11/d3d10-graphics-programming-guide-depth-stencil
+        private void EnableDepthTest()
+        {
+            if(depthStencilView != null)
+            {
+                depthStencilView.Dispose();
+            }
+
+            if(depthStencilState != null)
+            {
+                depthStencilState.Dispose();
+            }
+
+            // Create the depth stencil description
+            depthTextureDesc = new D3D11.Texture2DDescription
+            {
+                Format = Format.D16_UNorm,
+                ArraySize = 1,
+                MipLevels = 1,
+                Width = this.Width,
+                Height = this.Height,
+                SampleDescription = new SampleDescription(1, 0),
+                Usage = D3D11.ResourceUsage.Default,
+                BindFlags = D3D11.BindFlags.DepthStencil,
+                CpuAccessFlags = D3D11.CpuAccessFlags.None,
+                OptionFlags = D3D11.ResourceOptionFlags.None
+            };
+
+            // Create the depth stencil view
+            using (var depthTex = new D3D11.Texture2D(d3dDevice, depthTextureDesc))
+            {
+                depthStencilView = new D3D11.DepthStencilView(d3dDevice, depthTex);
+            }
+
+            // Create the depth stencil state description
+            depthStencilStateDesc = new D3D11.DepthStencilStateDescription();
+            depthStencilStateDesc.IsDepthEnabled = true;
+            depthStencilStateDesc.DepthWriteMask = D3D11.DepthWriteMask.All;
+            depthStencilStateDesc.DepthComparison = D3D11.Comparison.Less;
+            depthStencilStateDesc.IsStencilEnabled = false;
+
+            // Create the depth stencil state
+            depthStencilState = new D3D11.DepthStencilState(d3dDevice, depthStencilStateDesc);
+
+            // Update the context
+            d3dDeviceContext.OutputMerger.SetTargets(depthStencilView, renderTargetView);
+            d3dDeviceContext.OutputMerger.SetDepthStencilState(depthStencilState);
+        }
+
         public void Dispose()
         {
             renderForm.Dispose();
@@ -263,6 +329,8 @@ namespace GameEngine2D.EngineCore
             d3dDeviceContext.Dispose();
             renderTargetView.Dispose();
             blendState.Dispose();
+            depthStencilView.Dispose();
+            depthStencilState.Dispose();
         }
     }
 }

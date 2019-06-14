@@ -41,15 +41,20 @@ namespace GameEngine2D.Rendering
             // Width and height of each tile in the tileset
             int tileWidth = tileset.Texture.Width / tileset.RowLength;
             int tileHeight = tileset.Texture.Height / tileset.ColLength;
+            // Get the spacing between tiles
+            int spacingX = tilemap.SpacingX >= 0 ? tilemap.SpacingX : tileWidth;
+            int spacingY = tilemap.SpacingY >= 0 ? tilemap.SpacingY : tileHeight;
             // Calculate the distance from the edge of a pixel to the centre of the pixel as a ratio of the dimensions of the texture
             float halfPixelWidth = (1 / tileset.Texture.Width) / 2;
             float halfPixelHeight = (1 / tileset.Texture.Height) / 2;
             // Vertices of the rectangle
             // Rectangle drawn as two triangles
             VertexXYUV[] vertices = new VertexXYUV[6 * gridWidth * gridHeight];
-            for (int i = 0; i < gridWidth; i++)
+            // Loop over rows backwards (top to bottom) s.t. tiles lower down the screen are rendered last
+            for (int j = gridHeight - 1; j >= 0; j--)
             {
-                for (int j = 0; j < gridHeight; j++)
+                // Loop over columns from left to right
+                for (int i = 0; i < gridWidth; i++)
                 {
                     int value = tilemap.TileGrid[i, j];
                     // Check the tile texture is valid for the tileset given
@@ -58,16 +63,16 @@ namespace GameEngine2D.Rendering
                         // Calculate the position of the tile in the texture atlas
                         int atlasX = value % tileset.RowLength;
                         int atlasY = value / tileset.ColLength;
+                        // Calculate the position co-ordinates for the tile
+                        float x0 = i * spacingX + halfPixelWidth;
+                        float x1 = i * spacingX + tileWidth - halfPixelWidth;
+                        float y0 = j * spacingY + halfPixelHeight;
+                        float y1 = j * spacingY + tileHeight - halfPixelHeight;
                         // Calculate the texture co-ordinates for the tile
                         float u0 = (float)atlasX / tileset.RowLength;
                         float u1 = (float)(atlasX + 1) / tileset.RowLength;
                         float v0 = (float)atlasY / tileset.ColLength;
                         float v1 = (float)(atlasY + 1) / tileset.ColLength;
-                        // Calculate the position co-ordinates for the tile
-                        float x0 = i * tileWidth + halfPixelWidth;
-                        float x1 = (i + 1) * tileWidth - halfPixelWidth;
-                        float y0 = j * tileHeight + halfPixelHeight;
-                        float y1 = (j + 1) * tileHeight - halfPixelHeight;
                         // Set the vertex's position and texture co-ordinates
                         vertices[6*(i + gridWidth * j) + 0] = new VertexXYUV(new Vector2(x0, y1), new Vector2(u0, v0));
                         vertices[6*(i + gridWidth * j) + 1] = new VertexXYUV(new Vector2(x1, y1), new Vector2(u1, v0));

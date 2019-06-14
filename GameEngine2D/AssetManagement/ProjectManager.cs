@@ -58,6 +58,9 @@ namespace GameEngine2D.AssetManagement
         // Only contains guis which have been loaded
         public Dictionary<string, UserInterface> LoadedGuis { get; private set; }
 
+        // The map from blueprint path to blueprint entity object
+        public Dictionary<string, Entity> LoadedBlueprints { get; private set; }
+
         // The DLL storing the game scripts
         private Assembly scriptsDll;
 
@@ -83,6 +86,9 @@ namespace GameEngine2D.AssetManagement
 
             // Create the map from gui name to gui object
             LoadedGuis = new Dictionary<string, UserInterface>();
+
+            // Create the map from blueprint path to blueprint entity object
+            LoadedBlueprints = new Dictionary<string, Entity>();
 
             // Load the project info
             LoadProjectInfoFile(projectPath + "/info.xml");
@@ -130,9 +136,44 @@ namespace GameEngine2D.AssetManagement
             }
         }
 
+        // Load a blueprint if it has not already been loaded
+        // After loading, the blueprint is added to the LoadedBlueprints map
+        private void LoadBlueprint(string bpPath)
+        {
+            if(bpPath != null && !LoadedBlueprints.ContainsKey(bpPath))
+            {
+                string path = projectPath + "/" + bpPath;
+                Scene s = new Scene();
+
+                // Load the xml file
+                XElement root = XElement.Load(path);
+
+                // Treat the blueprint node as if it were an entity node
+                Entity bp = new Entity(null);
+                ParseEntity(root, bp);
+
+                // Add the scene to the loaded scenes map
+                LoadedBlueprints[path] = bp;
+            }
+        }
+
         // Parse the xml node of an entity
         private void ParseEntity(XElement entityNode, Entity e)
         {
+            // If the entity requires a blueprint, load the blueprint first
+            var blueprintAttrib = entityNode.Attribute("blueprint");
+            if(blueprintAttrib != null)
+            {
+                var blueprintPath = blueprintAttrib.Value;
+                // Load the blueprint
+                LoadBlueprint(blueprintPath);
+                // Copy from the blueprint
+                if(LoadedBlueprints.ContainsKey(blueprintPath))
+                {
+                    // TODO
+                }
+            }
+
             // Extract the name of the entity from the xml
             var nameAttrib = entityNode.Attribute("name");
             if(nameAttrib != null)
@@ -347,8 +388,36 @@ namespace GameEngine2D.AssetManagement
             var tilemapNode = componentNode.Element("tilemap");
             if (tilemapNode != null)
             {
-                // Load the tilemap
-                t.Tilemap = new Tilemap(AssetManager.Instance.AddTextFile(projectPath + "/" + tilemapNode.Value.ToString()));
+                // Parse the layout node if there is one
+                var layoutNode = tilemapNode.Element("layout");
+                if (layoutNode != null)
+                {
+                    int spacingX = -1;
+                    int spacingY = -1;
+
+                    // Parse the spacing node if there is one
+                    var spacingNode = tilemapNode.Element("spacing");
+                    if (spacingNode != null)
+                    {
+                        var xNode = spacingNode.Element("x");
+                        var yNode = spacingNode.Element("y");
+                        try
+                        {
+                            if (xNode != null && yNode != null)
+                            {
+                                spacingX = int.Parse(xNode.Value);
+                                spacingY = int.Parse(yNode.Value);
+                            }
+                        }
+                        catch (FormatException e)
+                        {
+                            Console.WriteLine(e.Message + " at parse tilemap spacing x/y");
+                        }
+                    }
+
+                    // Load the tilemap
+                    t.Tilemap = new Tilemap(AssetManager.Instance.AddTextFile(projectPath + "/" + layoutNode.Value.ToString()), spacingX, spacingY);
+                }
             }
         }
 

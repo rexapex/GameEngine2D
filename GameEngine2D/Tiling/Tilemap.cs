@@ -17,7 +17,12 @@ namespace GameEngine2D.Tiling
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public Tilemap(string fileContents)
+        // The pixel spacing between each tile (defaults to the tilewidth/tileheight)
+        // Value less than use default spacing
+        public int SpacingX { get; set; }
+        public int SpacingY { get; set; }
+
+        public Tilemap(string fileContents, int spacingX=-1, int spacingY=-1)
         {
             // Get the height from the string
             var lines = Regex.Split(fileContents, "\r\n|\n|\r");
@@ -52,6 +57,10 @@ namespace GameEngine2D.Tiling
             // Set the dimensions
             Width = width;
             Height = height;
+
+            // Set the tile spacing
+            SpacingX = spacingX;
+            SpacingY = spacingY;
         }
     }
 }
